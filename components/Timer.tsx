@@ -44,53 +44,57 @@ const Timer = ({
 	const [timerType, setTimerType] = useState<string>("focus");
 
 	useEffect(() => {
-		setPauseAction(true);
-		if (timerType === "FOCUS") setTimeRemaining(focusTime);
-	}, [timerType, focusTime, setPauseAction, setTimeRemaining]);
+		if (openSettingsState === true) {
+			setPauseAction(true);
+		}
+	}, [openSettingsState, setPauseAction]);
 
-	useEffect(() => {
-		setPauseAction(true);
-		if (timerType === "BREAK") setTimeRemaining(breakTime);
-	}, [timerType, breakTime, setPauseAction, setTimeRemaining]);
-
-	useEffect(() => {
-		setPauseAction(true);
-		if (timerType === "MARATHON") setTimeRemaining(marathonTime);
-	}, [timerType, marathonTime, setPauseAction, setTimeRemaining]);
-
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only thing that matters is the time to check for auto start
 	useEffect(() => {
 		// TODO: Keep track that session has been completed
 		if (time <= 0) {
+			// TODO: Play a sound when changing to a different timer
+			switch (timerType) {
+				case "FOCUS":
+					setPauseAction(true);
+					setTimeRemaining(breakTime);
+					setTimerType("BREAK");
+					setCurrentColor("bg-blue-500");
+					break;
+				case "BREAK":
+					setPauseAction(true);
+					setTimeRemaining(focusTime);
+					setTimerType("FOCUS");
+					setCurrentColor("bg-red-100");
+					break;
+				case "MARATHON":
+					setPauseAction(false);
+					setTimeRemaining(marathonBreakTime);
+					setTimerType("MARATHONBREAK");
+					setCurrentColor("bg-blue-500");
+					break;
+				case "MARATHONBREAK":
+					setPauseAction(false);
+					setTimeRemaining(marathonTime);
+					setTimerType("MARATHON");
+					setCurrentColor("bg-orange-300");
+					break;
+			}
 			// do not auto start instead, it will display the focus break time instead
 			if (timerType === "FOCUS") {
-				setPauseAction(true);
-				setTimeRemaining(breakTime);
-				setTimerType("FOCUSBREAK");
 			}
 			// auto start using the marathon break time
 			if (timerType === "MARATHON") {
-				setPauseAction(false);
-				setTimeRemaining(marathonBreakTime);
-				setTimerType("MARATHONBREAK");
 			}
 			if (timerType === "BREAK") {
-				setPauseAction(true);
-				setTimeRemaining(focusTime);
 			}
-			setColor("bg-blue-500");
 		}
-	}, [
-		timerType,
-		time,
-		setPauseAction,
-		breakTime,
-		marathonBreakTime,
-		setTimeRemaining,
-		focusTime,
-	]);
+	}, [time]);
 
 	// set color of the circle timer
-	const [color, setColor] = useState("bg-red-100");
+	const [currentColor, setCurrentColor] = useState("bg-red-100");
+
+	// TODO: use useState to set the different colors for each timer, usefuil for changing theme/colors from settings
 
 	return (
 		<Card className="max-w-md mx-auto my-auto shadow-md overflow-hidden">
@@ -98,7 +102,7 @@ const Timer = ({
 				<Button
 					onClick={() => {
 						setTimeRemaining(focusTime);
-						setColor("bg-red-100");
+						setCurrentColor("bg-red-100");
 						setTimerType("FOCUS");
 						setPauseAction(true);
 					}}
@@ -108,7 +112,7 @@ const Timer = ({
 				<Button
 					onClick={() => {
 						setTimeRemaining(marathonTime);
-						setColor("bg-red-100");
+						setCurrentColor("bg-orange-300");
 						setTimerType("MARATHON");
 						setPauseAction(true);
 					}}
@@ -118,7 +122,7 @@ const Timer = ({
 				<Button
 					onClick={() => {
 						setTimeRemaining(breakTime);
-						setColor("bg-blue-500");
+						setCurrentColor("bg-blue-500");
 						setTimerType("BREAK");
 						setPauseAction(true);
 					}}
@@ -129,7 +133,7 @@ const Timer = ({
 			<CardContent>
 				<Button
 					variant="outline"
-					className={`font-bold text-white text-7xl rounded-full ${color} flex items-center justify-center font-mono `}
+					className={`font-bold text-white text-7xl rounded-full ${currentColor} flex items-center justify-center font-mono `}
 					style={{ width: "100%", height: "100%", aspectRatio: "1/1" }}
 					onClick={() => setPauseAction(!pauseState)}
 				>
@@ -147,6 +151,8 @@ const Timer = ({
 				setMarathonTime={setMarathonTime}
 				marathonBreakTime={marathonBreakTime}
 				setMarathonBreakTime={setMarathonBreakTime}
+				setRemainingTime={setTimeRemaining}
+				timerType={timerType}
 			/>
 		</Card>
 	);

@@ -8,6 +8,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 
 interface Props {
 	openSettings: boolean;
@@ -20,6 +21,8 @@ interface Props {
 	setMarathonTime: React.Dispatch<React.SetStateAction<number>>;
 	marathonBreakTime: number;
 	setMarathonBreakTime: React.Dispatch<React.SetStateAction<number>>;
+	setRemainingTime: React.Dispatch<React.SetStateAction<number>>;
+	timerType: string;
 }
 
 const TimerSettings = ({
@@ -33,6 +36,8 @@ const TimerSettings = ({
 	marathonBreakTime,
 	setMarathonTime,
 	setMarathonBreakTime,
+	setRemainingTime,
+	timerType,
 }: Props) => {
 	const convertMinutesToMs = (time: number): number => {
 		return time * 1000 * 60;
@@ -41,7 +46,45 @@ const TimerSettings = ({
 	const convertMsToMinutes = (time: number): number => {
 		return time / 60000;
 	};
-	// TODO: Save settings with only OK button press
+
+	const handleChanges = () => {
+		setFocusTime(settingsFocusTime);
+		setBreakTime(settingsBreakTime);
+		setMarathonTime(settingsMarathonTime);
+		setMarathonBreakTime(settingsMarahtonBreakTime);
+		switch (timerType) {
+			case "FOCUS":
+				setRemainingTime(settingsFocusTime);
+				break;
+			case "BREAK":
+				setRemainingTime(settingsBreakTime);
+				break;
+			case "MARATHON":
+				setRemainingTime(settingsMarathonTime);
+				break;
+			case "MARATHONBREAK":
+				setRemainingTime(settingsMarathonTime);
+				break;
+		}
+		setOpenSettings(!openSettings);
+	};
+
+	const [settingsFocusTime, setSettingsFocusTime] = useState(focusTime);
+	const [settingsBreakTime, setSettingsBreakTime] = useState(breakTime);
+	const [settingsMarathonTime, setSettingsMarathonTime] =
+		useState(marathonTime);
+	const [settingsMarahtonBreakTime, setSettingsMarathonBreakTime] =
+		useState(marathonBreakTime);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: the settings should not retain if we exit out of the settings dialog
+	useEffect(() => {
+		setSettingsFocusTime(focusTime);
+		setSettingsMarathonTime(marathonTime);
+		setSettingsBreakTime(breakTime);
+		setSettingsMarathonBreakTime(marathonBreakTime);
+	}, [openSettings]);
+
+	// TODO: Be able to set colors/themes
 	return (
 		<Dialog open={openSettings} onOpenChange={setOpenSettings}>
 			<DialogContent className="sm:max-w-[425px] bg-pink-50">
@@ -57,9 +100,11 @@ const TimerSettings = ({
 								min={1}
 								max={999}
 								type="number"
-								value={convertMsToMinutes(focusTime)}
+								value={convertMsToMinutes(settingsFocusTime)}
 								onChange={(val) =>
-									setFocusTime(convertMinutesToMs(Number(val.target.value)))
+									setSettingsFocusTime(
+										convertMinutesToMs(Number(val.target.value)),
+									)
 								}
 							/>
 						</div>
@@ -69,9 +114,11 @@ const TimerSettings = ({
 								min={1}
 								max={999}
 								type="number"
-								value={convertMsToMinutes(breakTime)}
+								value={convertMsToMinutes(settingsBreakTime)}
 								onChange={(val) =>
-									setBreakTime(convertMinutesToMs(Number(val.target.value)))
+									setSettingsBreakTime(
+										convertMinutesToMs(Number(val.target.value)),
+									)
 								}
 							/>
 						</div>
@@ -88,9 +135,11 @@ const TimerSettings = ({
 								min={1}
 								max={999}
 								type="number"
-								value={convertMsToMinutes(marathonTime)}
+								value={convertMsToMinutes(settingsMarathonTime)}
 								onChange={(val) =>
-									setMarathonTime(convertMinutesToMs(Number(val.target.value)))
+									setSettingsMarathonTime(
+										convertMinutesToMs(Number(val.target.value)),
+									)
 								}
 							/>
 						</div>
@@ -100,9 +149,9 @@ const TimerSettings = ({
 								min={1}
 								max={999}
 								type="number"
-								value={convertMsToMinutes(marathonBreakTime)}
+								value={convertMsToMinutes(settingsMarahtonBreakTime)}
 								onChange={(val) =>
-									setMarathonBreakTime(
+									setSettingsMarathonBreakTime(
 										convertMinutesToMs(Number(val.target.value)),
 									)
 								}
@@ -111,7 +160,7 @@ const TimerSettings = ({
 					</div>
 				</div>
 				<DialogFooter>
-					<Button onClick={() => setOpenSettings(!openSettings)}>Ok</Button>
+					<Button onClick={() => handleChanges()}>Ok</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

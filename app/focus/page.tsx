@@ -11,17 +11,15 @@ const FocusPage: React.FC = () => {
 	const [timeRemaining, setTimeRemaining] = useState<number>(1500000);
 	const [pause, setPause] = useState<boolean>(true);
 
-	// TODO: Does not auto start even when if statement is true
 	useEffect(() => {
 		if (!pause && timeRemaining > 0) {
 			const timer = setInterval(
 				// can't set to lower than 4ms because browsers have a limit
-				() => setTimeRemaining(timeRemaining - 100),
-				100,
+				() => setTimeRemaining(timeRemaining - 10),
+				10,
 			);
 			return () => clearInterval(timer);
 		}
-		console.log(`time remaining: ${timeRemaining} and pause is: ${pause}`);
 	}, [pause, timeRemaining]);
 	//////////////////////////////////////////////////////
 
