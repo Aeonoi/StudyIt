@@ -1,4 +1,16 @@
 import mongoose from "mongoose";
+import type { Document } from "mongoose";
+
+export interface ITask extends Document {
+	_id: string;
+	name: string;
+	started?: Date;
+	completed?: boolean;
+	createdDate?: Date;
+	lastDone?: Date;
+	completedSessions?: number;
+	totalSessions?: number;
+}
 
 export const TasksSchema = new mongoose.Schema({
 	// name of the task
@@ -34,5 +46,5 @@ export const TasksSchema = new mongoose.Schema({
 	},
 });
 
-const Task = mongoose.models.Task || mongoose.model("Task", TasksSchema);
+const Task = mongoose.models.Task || mongoose.model<ITask>("Task", TasksSchema);
 export default Task;

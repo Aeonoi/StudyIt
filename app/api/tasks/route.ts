@@ -1,20 +1,24 @@
 import connectDB from "@/lib/connect-mongo";
-import { createTask } from "@/lib/mongo-functions";
+import { createTask, getAllTasks } from "@/lib/mongo-functions";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import Task from "@/models/tasks";
 
-export async function GET(req: NextRequest) {
+/* Get all tasks created */
+export async function GET() {
 	try {
 		await connectDB();
-		return new NextResponse(JSON.stringify(new Date()), {
-			status: 200,
-		});
+		const allTasks = await getAllTasks();
+		if (allTasks) {
+			return new NextResponse(JSON.stringify(allTasks), { status: 200 });
+		}
+		return new NextResponse(JSON.stringify(allTasks), { status: 400 });
 	} catch (error) {
 		console.error(error);
 	}
 }
 
+/* Create a new task */
 export async function POST(req: NextRequest) {
 	try {
 		await connectDB();
