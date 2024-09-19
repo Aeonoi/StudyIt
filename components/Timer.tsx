@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import TimerSettings from "./TimerSettings";
 import SelectTask from "./SelectTask";
+import { completedTask, startTask } from "@/lib/mongo-functions";
 
 interface Prop {
   time: number;
@@ -42,7 +43,7 @@ const Timer = ({
   const [marathonTime, setMarathonTime] = useState<number>(7200000);
   const [marathonBreakTime, setMarathonBreakTime] = useState<number>(900000);
 
-  const [timerType, setTimerType] = useState<string>("focus");
+  const [timerType, setTimerType] = useState<string>("FOCUS");
 
   useEffect(() => {
     if (openSettingsState === true) {

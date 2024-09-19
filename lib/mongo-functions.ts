@@ -20,13 +20,12 @@ export async function createTask(name: string) {
     await connectDB();
     const newTask = await Task.create({
       name: name,
-      // default values
-      started: false,
-      completed: false,
+      // placeholder values
       createdDate: new Date(),
       lastDone: new Date(1980, 1, 1),
       completedSessions: 0,
       totalSessions: 0,
+      totalTime: 0
     });
     return JSON.parse(JSON.stringify(newTask));
   } catch (error) {
@@ -39,18 +38,19 @@ export async function startTask(id: string) {
   try {
     await connectDB();
     const currentTask = await Task.findById(id);
-    console.log(JSON.parse(JSON.stringify(currentTask)));
+    await Task.findByIdAndUpdate(id, { totalSessions: currentTask.totalSessions + 1 }, { new: true })
   } catch (error) {
     console.error(error);
   }
 }
 
 /* Increments the number of sessions a task has completed (old += 1) */
-export async function completedTask(id: string) {
+export async function completedTask(id: string, elapsedTime: number) {
   try {
     await connectDB();
     const currentTask = await Task.findById(id);
-    console.log(currentTask);
+    await Task.findByIdAndUpdate(id, { completedSessions: currentTask.completedSessions + 1, totalTime: currentTask.totalTime + elapsedTime }, { new: true })
+    console.log(JSON.parse(JSON.stringify(await Task.findById(id))))
   } catch (error) {
     console.error(error);
   }
