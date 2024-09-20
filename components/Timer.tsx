@@ -3,7 +3,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import TimerSettings from "./TimerSettings";
 import SelectTask from "./SelectTask";
-import { completedTask, startTask } from "@/lib/mongo-functions";
+import ReactPlayer from "react-player";
+import {
+  completeBreak,
+  completedTask,
+  startBreak,
+  startTask,
+} from "@/lib/mongo-functions";
 
 interface Prop {
   time: number;
@@ -55,7 +61,6 @@ const Timer = ({
   useEffect(() => {
     if (time <= 0) {
       // TODO: Play a sound when changing to a different timer
-      // TODO: Keep track that session has been completed
       switch (timerType) {
         case "FOCUS":
           setPauseAction(true);
@@ -63,6 +68,9 @@ const Timer = ({
           setTimerType("BREAK");
           setCurrentColor("bg-blue-500");
           setStarted(false);
+          if (currentSelectedTask) {
+            completedTask(currentSelectedTask, focusTime / 1000);
+          }
           break;
         case "BREAK":
           setPauseAction(true);
@@ -70,6 +78,9 @@ const Timer = ({
           setTimerType("FOCUS");
           setCurrentColor("bg-red-100");
           setStarted(false);
+          if (currentSelectedTask) {
+            completeBreak(currentSelectedTask, breakTime);
+          }
           break;
         case "MARATHON":
           setPauseAction(false);
@@ -77,6 +88,10 @@ const Timer = ({
           setTimerType("MARATHONBREAK");
           setCurrentColor("bg-blue-500");
           setStarted(true);
+          if (currentSelectedTask) {
+            completedTask(currentSelectedTask, marathonTime / 1000);
+            startBreak(currentSelectedTask);
+          }
           break;
         case "MARATHONBREAK":
           setPauseAction(false);
@@ -84,6 +99,9 @@ const Timer = ({
           setTimerType("MARATHON");
           setCurrentColor("bg-orange-300");
           setStarted(true);
+          if (currentSelectedTask) {
+            completeBreak(currentSelectedTask, marathonBreakTime);
+          }
           break;
       }
     }
@@ -94,6 +112,13 @@ const Timer = ({
 
   const [currentSelectedTask, setCurrentSelectedTask] = useState<string>("");
   const [started, setStarted] = useState<boolean>(false);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only care about when the task has been started
+  useEffect(() => {
+    if (started && currentSelectedTask) {
+      startTask(currentSelectedTask);
+    }
+  }, [started]);
 
   // TODO: use useState to set the different colors for each timer, usefuil for changing theme/colors from settings
 
@@ -150,6 +175,9 @@ const Timer = ({
           onClick={() => {
             setPauseAction(!pauseState);
             setStarted(true);
+            if (currentSelectedTask && timerType === "BREAK") {
+              startBreak(currentSelectedTask);
+            }
           }}
         >
           {calculateTime(time)}

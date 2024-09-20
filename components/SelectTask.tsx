@@ -51,6 +51,7 @@ export default function SelectTask({
   // tracks the input value of the search/create command
   const commandInputRef = useRef<null | HTMLInputElement>(null);
 
+  // TODO: Have a scroll when the list becomes too large (> 5)
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -80,7 +81,7 @@ export default function SelectTask({
                   commandInputRef.current?.value &&
                   commandInputRef.current.value !== name
                 ) {
-                  await createTask(commandInputRef.current.value);
+                  console.log(await createTask(commandInputRef.current.value));
                   fetchAllTasks();
                 }
               }}

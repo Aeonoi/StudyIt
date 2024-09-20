@@ -8,7 +8,10 @@ export interface ITask extends Document {
   lastDone: Date;
   completedSessions: number;
   totalSessions: number;
-  totalTime: number;
+  completedBreaks: number;
+  totalBreaks: number;
+  totalStudyingTime: number;
+  totalBreakTime: number;
 }
 
 export const TasksSchema = new mongoose.Schema({
@@ -39,12 +42,30 @@ export const TasksSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
-  // total time in seconds 
-  totalTime: {
+  // completed breaks
+  completedBreaks: {
     type: Number,
     min: 0,
     required: true,
-  }
+  },
+  // total number of breaks
+  totalBreaks: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  // total studying time in seconds
+  totalStudyingTime: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  // total break time in seconds
+  totalBreakTime: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
 });
 
 const Task = mongoose.models.Task || mongoose.model<ITask>("Task", TasksSchema);

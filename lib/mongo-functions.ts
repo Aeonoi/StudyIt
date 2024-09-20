@@ -1,7 +1,9 @@
 "use server";
 // https://stackoverflow.com/questions/77091418/warning-only-plain-objects-can-be-passed-to-client-components-from-server-compo
 import connectDB from "./connect-mongo";
-import Task from "@/models/tasks";
+import Task, { ITask } from "@/models/tasks";
+
+// TODO: Add field to track marathon and normal focus sessions
 
 /* Returns all the tasks that have been created so far */
 export async function getAllTasks() {
@@ -25,7 +27,10 @@ export async function createTask(name: string) {
       lastDone: new Date(1980, 1, 1),
       completedSessions: 0,
       totalSessions: 0,
-      totalTime: 0
+      completedBreaks: 0,
+      totalBreaks: 0,
+      totalStudyingTime: 0,
+      totalBreakTime: 0,
     });
     return JSON.parse(JSON.stringify(newTask));
   } catch (error) {
@@ -38,7 +43,11 @@ export async function startTask(id: string) {
   try {
     await connectDB();
     const currentTask = await Task.findById(id);
-    await Task.findByIdAndUpdate(id, { totalSessions: currentTask.totalSessions + 1 }, { new: true })
+    await Task.findByIdAndUpdate(
+      id,
+      { totalSessions: currentTask.totalSessions + 1 },
+      { new: true },
+    );
   } catch (error) {
     console.error(error);
   }
@@ -49,8 +58,50 @@ export async function completedTask(id: string, elapsedTime: number) {
   try {
     await connectDB();
     const currentTask = await Task.findById(id);
-    await Task.findByIdAndUpdate(id, { completedSessions: currentTask.completedSessions + 1, totalTime: currentTask.totalTime + elapsedTime }, { new: true })
-    console.log(JSON.parse(JSON.stringify(await Task.findById(id))))
+    const task = await Task.findByIdAndUpdate(
+      id,
+      {
+        completedSessions: currentTask.completedSessions + 1,
+        totalStudyingTime: currentTask.totalStudyingTime + elapsedTime,
+        lastDone: new Date(),
+      },
+      { new: true },
+    );
+    console.log(JSON.parse(JSON.stringify(task)));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/* Updates the tottal number of breaks  */
+export async function startBreak(id: string) {
+  try {
+    await connectDB();
+    const currentTask = await Task.findById(id);
+    await Task.findByIdAndUpdate(
+      id,
+      { totalSessions: currentTask.totalSessions + 1 },
+      { new: true },
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/* Increments the number of breaks that has been completed (old += 1) */
+export async function completeBreak(id: string, elapsedTime: number) {
+  try {
+    await connectDB();
+    const currentTask = await Task.findById(id);
+    const task = await Task.findByIdAndUpdate(
+      id,
+      {
+        completedSessions: currentTask.completedSessions + 1,
+        totalTime: currentTask.totalTime + elapsedTime,
+      },
+      { new: true },
+    );
+    console.log(JSON.parse(JSON.stringify(task)));
   } catch (error) {
     console.error(error);
   }

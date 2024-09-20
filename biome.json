@@ -21,5 +21,11 @@
     "lineEnding": "lf",
     "lineWidth": 80,
     "attributePosition": "auto"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
   }
 }

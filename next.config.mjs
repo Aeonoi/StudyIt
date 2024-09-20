@@ -5,6 +5,7 @@ const nextConfig = {
   },
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
+    YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY
   },
 };
 
