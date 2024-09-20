@@ -39,7 +39,7 @@ const VideoPlayer = (): JSX.Element => {
     useState<boolean>(false);
 
   // 0 to 1
-  const [volume, setVolume] = useState<number>(0.5);
+  const [volume, setVolume] = useState<number>(0.2);
 
   // TODO: Add slider for audio
   return (
@@ -75,14 +75,17 @@ const VideoPlayer = (): JSX.Element => {
       >
         <SkipForwardIcon />
       </Button>
-      <Button variant={"ghost"}>
-        <Volume2Icon
-          onClick={() => setVolumeSliderVisible(!volumeSliderVisible)}
-        />
+      <Button
+        variant={"ghost"}
+        onClick={() => setVolumeSliderVisible(!volumeSliderVisible)}
+      >
+        {volume > 0.45 && <Volume2Icon />}
+        {volume > 0 && volume < 0.45 && <Volume1Icon />}
+        {volume === 0 && <VolumeIcon />}
       </Button>
       {volumeSliderVisible && (
         <Slider
-          defaultValue={[50]}
+          defaultValue={[volume * 100]}
           max={100}
           step={1}
           className={cn("w-[100%]")}
