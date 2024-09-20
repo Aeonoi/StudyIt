@@ -10,15 +10,11 @@ import {
 } from "lucide-react";
 import ReactPlayer from "react-player";
 
-interface YoutubeData {
-  url: string;
-  title: string;
-  id: string;
-}
-
 const VideoPlayer = (): JSX.Element => {
   const [pauseMusic, setPauseMusic] = useState<boolean>(true);
-  const [videos, setVideos] = useState<string[][]>(new Array());
+  const [videos, setVideos] = useState<string[][]>([
+    ["https://www.youtube.com/watch?v=kavLNr-PyoY"],
+  ]);
 
   // only fetch on start of page
   useEffect(() => {
@@ -31,10 +27,20 @@ const VideoPlayer = (): JSX.Element => {
     fetchVideosFunc();
   }, []);
 
+  // controls the current video index array of **videos**
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
+
   // TODO: Add slider for audio
   return (
     <Card>
-      <Button variant={"ghost"}>
+      <Button
+        variant={"ghost"}
+        onClick={() => {
+          currentVideoIndex === 0
+            ? setCurrentVideoIndex(videos.length - 1)
+            : setCurrentVideoIndex((prev) => prev - 1);
+        }}
+      >
         <SkipBackIcon />
       </Button>
       <Button
@@ -46,13 +52,18 @@ const VideoPlayer = (): JSX.Element => {
         {!pauseMusic && <PauseIcon />}
         {pauseMusic && <PlayIcon />}
       </Button>
-      <Button variant={"ghost"}>
+      <Button
+        variant={"ghost"}
+        onClick={() => {
+          currentVideoIndex === videos.length - 1
+            ? setCurrentVideoIndex(0)
+            : setCurrentVideoIndex((prev) => prev + 1);
+        }}
+      >
         <SkipForwardIcon />
       </Button>
       <ReactPlayer
-        // url={videos[0][0]}
-        // TODO: REMOVE, IS PLACE HOLDER
-        url={"https://www.youtube.com/watch?v=kavLNr-PyoY"}
+        url={videos[currentVideoIndex][0]}
         width={0}
         height={0}
         playing={!pauseMusic}

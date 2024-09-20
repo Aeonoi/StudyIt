@@ -3,13 +3,13 @@
 
 // contains the YouTube data API key (replace with key)
 // const KEY: string | undefined = process.env.YOUTUBE_API_KEY;
-// TODO: REMOVE, IS PLACE HOLDER
 const KEY: string | undefined = "";
 const URL_API = "https://www.googleapis.com/youtube/v3/search";
 let QUERY = "lofi girl";
 const PART = "part=snippet";
 const TYPE: string = "video"; // channel, video
 const YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v=";
+const MAX_RESULTS = 20;
 
 // downloads the yotuube video as mp3
 
@@ -46,7 +46,7 @@ interface YoutubeAPITypes {
 // @return: array of youtube url and the title corresponding to the video
 export async function fetchVideos(query: string) {
   QUERY = query;
-  const url = `${URL_API}?key=${KEY}&q=${QUERY}&type=${TYPE}&${PART}`;
+  const url = `${URL_API}?key=${KEY}&q=${QUERY}&type=${TYPE}&${PART}&maxResults=${MAX_RESULTS}`;
   const data = await fetch(url, {
     method: "GET",
   })
