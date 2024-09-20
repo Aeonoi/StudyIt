@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -7,8 +8,12 @@ import {
   PlayIcon,
   SkipForwardIcon,
   SkipBackIcon,
+  VolumeIcon,
+  Volume1Icon,
+  Volume2Icon,
 } from "lucide-react";
 import ReactPlayer from "react-player";
+import { Slider } from "./ui/slider";
 
 const VideoPlayer = (): JSX.Element => {
   const [pauseMusic, setPauseMusic] = useState<boolean>(true);
@@ -30,9 +35,17 @@ const VideoPlayer = (): JSX.Element => {
   // controls the current video index array of **videos**
   const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
 
+  const [volumeSliderVisible, setVolumeSliderVisible] =
+    useState<boolean>(false);
+
+  // 0 to 1
+  const [volume, setVolume] = useState<number>(0.5);
+
   // TODO: Add slider for audio
   return (
-    <Card>
+    <Card
+      className={`grid ${volumeSliderVisible ? "grid-cols-5" : "grid-cols-4"}`}
+    >
       <Button
         variant={"ghost"}
         onClick={() => {
@@ -62,11 +75,28 @@ const VideoPlayer = (): JSX.Element => {
       >
         <SkipForwardIcon />
       </Button>
+      <Button variant={"ghost"}>
+        <Volume2Icon
+          onClick={() => setVolumeSliderVisible(!volumeSliderVisible)}
+        />
+      </Button>
+      {volumeSliderVisible && (
+        <Slider
+          defaultValue={[50]}
+          max={100}
+          step={1}
+          className={cn("w-[100%]")}
+          onChange={(val) => console.log(val)}
+          onValueChange={(val) => setVolume(val[0] / 100)}
+        />
+      )}
       <ReactPlayer
         url={videos[currentVideoIndex][0]}
         width={0}
         height={0}
+        volume={volume}
         playing={!pauseMusic}
+        onEnded={() => setPauseMusic(true)}
       />
     </Card>
   );
