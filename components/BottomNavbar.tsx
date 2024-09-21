@@ -1,7 +1,7 @@
 import { Button } from "./ui/button";
 import { Notebook, Search, SettingsIcon } from "lucide-react";
 import { Card } from "./ui/card";
-import VideoPlayer from "./VideoPlayer";
+import AudioPlayer from "./AudioPlayer";
 
 interface Props {
   textareaState: boolean;
@@ -32,7 +32,7 @@ const BottomNavbar = ({
         </Button>
       </Card>
       {/* FIXME: Error: Hydration failed because the initial UI does not match what was rendered on the server. */}
-      <VideoPlayer />
+      <AudioPlayer />
     </nav>
   );
 };

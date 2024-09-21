@@ -54,12 +54,18 @@
 
 * [ ] Track how long the user has logged in for 
 * [ ] Track how many consecutive days (streak) the user has been logged in for
+* Queries the different days and checks if they are back to back.
 * [ ] Create a rank system for these data points (bronze, silver, etc.)
+* Lose points for not accomplishing certain milestones
 * [ ] Have medals/achievements for reaching certain points
 
 ### Settings/Preferences: 
 
 * [ ] Open settings: (Enable/Disable leaving tab when timer is on) 
+
+### Studying Habits (WIP):
+
+* [ ] Try to promote healthy studying habits.
 
 ## Getting Started
 

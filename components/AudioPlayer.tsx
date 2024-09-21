@@ -15,7 +15,7 @@ import {
 import ReactPlayer from "react-player";
 import { Slider } from "./ui/slider";
 
-const VideoPlayer = (): JSX.Element => {
+const AudioPlayer = (): JSX.Element => {
   const [pauseMusic, setPauseMusic] = useState<boolean>(true);
   const [videos, setVideos] = useState<string[][]>([
     ["https://www.youtube.com/watch?v=kavLNr-PyoY"],
@@ -106,4 +106,4 @@ const VideoPlayer = (): JSX.Element => {
   );
 };
 
-export default VideoPlayer;
+export default AudioPlayer;
