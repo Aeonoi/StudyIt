@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import ytdl from "ytdl-core";
 
 // interface for the json returned from POST
 interface Youtube {

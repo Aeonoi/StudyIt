@@ -93,6 +93,7 @@ const VideoPlayer = (): JSX.Element => {
           onValueChange={(val) => setVolume(val[0] / 100)}
         />
       )}
+      {/* FIX: CORS erorrs */}
       <ReactPlayer
         url={videos[currentVideoIndex][0]}
         width={0}
