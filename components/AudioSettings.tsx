@@ -28,11 +28,22 @@ const AudioSettings = ({
   audios,
   setAudio,
 }: Props): JSX.Element => {
-  const removePreference = (preference: string) => {
+  const removePreference = async (preference: string) => {
     const updatedPreferences = audioPreferences.filter(
       (item) => item !== preference,
     );
     setAudioPreferences(updatedPreferences);
+
+    // re fetch the urls and add them
+    const newAudio: string[] = [];
+    updatedPreferences.map(async (item) => {
+      const currentUrls = await fetchVideos(item);
+      if (currentUrls) {
+        newAudio.push.apply(newAudio, currentUrls);
+      }
+    });
+
+    setAudio(shuffleArray(newAudio));
   };
 
   const [audioPreferenceName, setAudioPreferenceName] = useState<string>("");
