@@ -11,26 +11,18 @@ import {
   VolumeIcon,
   Volume1Icon,
   Volume2Icon,
+  Settings2Icon,
 } from "lucide-react";
 import ReactPlayer from "react-player";
 import { Slider } from "./ui/slider";
+import AudioSettings from "./AudioSettings";
 
 const AudioPlayer = (): JSX.Element => {
   const [pauseMusic, setPauseMusic] = useState<boolean>(true);
-  const [videos, setVideos] = useState<string[][]>([
-    ["https://www.youtube.com/watch?v=kavLNr-PyoY"],
+  // FIX: Remove once ready to deploy
+  const [videos, setVideos] = useState<string[]>([
+    "https://www.youtube.com/watch?v=kavLNr-PyoY",
   ]);
-
-  // only fetch on start of page
-  useEffect(() => {
-    const fetchVideosFunc = async () => {
-      const data = await fetchVideos("lofi girl");
-      if (data) {
-        setVideos(data);
-      }
-    };
-    fetchVideosFunc();
-  }, []);
 
   // controls the current video index array of **videos**
   const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
@@ -41,10 +33,14 @@ const AudioPlayer = (): JSX.Element => {
   // 0 to 1
   const [volume, setVolume] = useState<number>(0.2);
 
-  // TODO: Add slider for audio
+  const [openSettings, setOpenSettings] = useState<boolean>(false);
+
+  // audio preferences
+  const [audioPreferences, setAudioPreferences] = useState<string[]>([]);
+
   return (
     <Card
-      className={`grid ${volumeSliderVisible ? "grid-cols-5" : "grid-cols-4"}`}
+      className={`grid ${volumeSliderVisible ? "grid-cols-6" : "grid-cols-5"}`}
     >
       <Button
         variant={"ghost"}
@@ -60,6 +56,7 @@ const AudioPlayer = (): JSX.Element => {
         variant={"ghost"}
         onClick={() => {
           setPauseMusic(!pauseMusic);
+          console.log(videos);
         }}
       >
         {!pauseMusic && <PauseIcon />}
@@ -70,7 +67,7 @@ const AudioPlayer = (): JSX.Element => {
         onClick={() => {
           currentVideoIndex === videos.length - 1
             ? setCurrentVideoIndex(0)
-            : setCurrentVideoIndex((prev) => prev + 1);
+            : setCurrentVideoIndex(currentVideoIndex + 1);
         }}
       >
         <SkipForwardIcon />
@@ -93,14 +90,30 @@ const AudioPlayer = (): JSX.Element => {
           onValueChange={(val) => setVolume(val[0] / 100)}
         />
       )}
+      <Button variant={"ghost"} onClick={() => setOpenSettings(true)}>
+        <Settings2Icon />
+      </Button>
+      <AudioSettings
+        openSettings={openSettings}
+        setOpenSettings={setOpenSettings}
+        audioPreferences={audioPreferences}
+        setAudioPreferences={setAudioPreferences}
+        audios={videos}
+        setAudio={setVideos}
+      />
       {/* FIX: CORS erorrs */}
       <ReactPlayer
-        url={videos[currentVideoIndex][0]}
+        url={videos[currentVideoIndex]}
         width={0}
         height={0}
         volume={volume}
         playing={!pauseMusic}
-        onEnded={() => setPauseMusic(true)}
+        onEnded={() => {
+          // setPauseMusic(true);
+          currentVideoIndex === videos.length - 1
+            ? setCurrentVideoIndex(0)
+            : setCurrentVideoIndex((prev) => prev + 1);
+        }}
       />
     </Card>
   );

@@ -2,8 +2,8 @@
 // usage: react-player
 
 // contains the YouTube data API key (replace with key)
-// const KEY: string | undefined = process.env.YOUTUBE_API_KEY;
-const KEY: string | undefined = "";
+const KEY: string | undefined = process.env.YOUTUBE_API_KEY;
+// const KEY: string | undefined = "";
 const URL_API = "https://www.googleapis.com/youtube/v3/search";
 let QUERY = "lofi girl";
 const PART = "part=snippet";
@@ -43,7 +43,7 @@ interface YoutubeAPITypes {
 }
 
 // DOCS: https://developers.google.com/youtube/v3/docs/search/list#go
-// @return: array of youtube url and the title corresponding to the video
+// @return: array of youtube url
 export async function fetchVideos(query: string) {
   QUERY = query;
   const url = `${URL_API}?key=${KEY}&q=${QUERY}&type=${TYPE}&${PART}&maxResults=${MAX_RESULTS}`;
@@ -59,13 +59,9 @@ export async function fetchVideos(query: string) {
       return response.json();
     })
     .then((content) => {
-      const youtube_videos: string[][] = new Array();
+      const youtube_videos: string[] = new Array();
       content.items.map((video: YoutubeAPITypes) => {
-        youtube_videos.push([
-          `${YOUTUBE_VIDEO_URL}${video.id.videoId}`,
-          video.snippet.title,
-          video.id.videoId,
-        ]);
+        youtube_videos.push(`${YOUTUBE_VIDEO_URL}${video.id.videoId}`);
       });
       console.log(youtube_videos);
       return youtube_videos;
