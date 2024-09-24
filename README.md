@@ -14,14 +14,14 @@
 
 * [x] Create different tasks
 * [x] Continue a current task
-* [ ] Create a section to implement Google search 
+* [x] Create a section to implement Google search 
 * [x] Create a section to implement audio preferences (refer to music section)
 * [x] Have a timer    
 * [x] Create a section to allow for customizing the timer (sound, time, breaks, etc.)
 * [ ] Create goals for separate courses/subjects
 * [x] Create a section to take notes (not saved)
 * [x] "Marathon" would be an automatic longer version of regular focus and be continuous, i.e. auto breaks.
-* [ ] Add in option to allow browser only mode (after implementing Google search)
+* [ ] Add in option to allow browser only mode (prevents user from leaving tab after timer has started)
 
 ### Studying Analysis Tool: 
 
