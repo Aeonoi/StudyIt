@@ -1,5 +1,6 @@
 "use client";
 import BottomNavbar from "@/components/BottomNavbar";
+import GoogleSearch from "@/components/GoogleSearch";
 import Navbar from "@/components/Navbar";
 import Timer from "@/components/Timer";
 import { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ const FocusPage: React.FC = () => {
   const [openSettings, setOpenSettings] = useState<boolean>(false);
   const [textareaVisible, setTextareaVisible] = useState<boolean>(false);
   const [textareaValue, setTextareaValue] = useState<string>("");
+  const [openSearch, setOpenSearch] = useState<boolean>(false);
 
   return (
     <main>
@@ -34,6 +36,7 @@ const FocusPage: React.FC = () => {
         <div
           className={`grid ${textareaVisible ? "grid-cols-2" : "grid-cols-1"}`}
         >
+          <GoogleSearch openSearch={openSearch} setOpenSearch={setOpenSearch} />
           <Timer
             time={timeRemaining}
             setTimeRemaining={setTimeRemaining}
@@ -61,6 +64,7 @@ const FocusPage: React.FC = () => {
         textareaState={textareaVisible}
         setOpenSettings={setOpenSettings}
         setTextareaVisible={setTextareaVisible}
+        setOpenSearch={setOpenSearch}
       />
     </main>
   );
