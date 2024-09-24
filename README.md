@@ -48,7 +48,7 @@
 ### Music:
 * [x] Play music audio 
 * [x] Skip forward/backward song/audio
-* [ ] Add preferences
+* [x] Add preferences
 
 ### Milestone/Rank: 
 
