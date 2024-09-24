@@ -2,6 +2,7 @@
 // https://stackoverflow.com/questions/77091418/warning-only-plain-objects-can-be-passed-to-client-components-from-server-compo
 import connectDB from "./connect-mongo";
 import Task, { ITask } from "@/models/tasks";
+import SuperTask, { ISuperTask } from "@/models/superTasks";
 
 // TODO: Add field to track marathon and normal focus sessions
 
