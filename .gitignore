@@ -37,3 +37,7 @@ next-env.d.ts
 
 # my stuff
 extra.txt
+
+# testing functions
+test.ts
+test.js

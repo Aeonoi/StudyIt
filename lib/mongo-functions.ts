@@ -5,6 +5,7 @@ import Task, { ITask } from "@/models/tasks";
 import SuperTask, { ISuperTask } from "@/models/superTasks";
 import Login, { ILogin } from "@/models/logins";
 import mongoose from "mongoose";
+import { compareTwoDates } from "./useful-functions";
 
 // TODO: Add field to track marathon and normal focus sessions
 
@@ -122,18 +123,26 @@ export async function deleteTask(id: string) {
 // Checks whether the collection exists
 export async function CheckLoginCollection() {
   await connectDB();
-  console.log("Checking here...");
+
+  console.log("Checking login collection here...");
   const collections = mongoose.connection.collections;
 
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
+  // checks the number of consecutive days from previous document (sorted)
   const checkConsecutiveDays = async (): Promise<number> => {
-    // returns array
-    const logins = await Login.find({ loginTime: { $lt: currentDate } });
-    // check if there are logins
+    // returns array sorted with latest date as first entry
+    const logins = await Login.find({ loginTime: { $lt: currentDate } }).sort({
+      loginTime: -1,
+    });
 
-    if (logins.length !== 0 && logins[0].consecutiveDays) {
+    // check if there are logins
+    if (
+      logins.length !== 0 &&
+      logins[0].consecutiveDays &&
+      compareTwoDates(currentDate, logins[0].loginTime)
+    ) {
       return logins[0].consecutiveDays + 1;
     }
     return 1;
