@@ -2,7 +2,9 @@
 import BottomNavbar from "@/components/BottomNavbar";
 import GoogleSearch from "@/components/GoogleSearch";
 import Navbar from "@/components/Navbar";
+import PreventLeave from "@/components/PreventLeave";
 import Timer from "@/components/Timer";
+import { CheckLoginCollection } from "@/lib/mongo-functions";
 import { useEffect, useState } from "react";
 import type React from "react";
 
@@ -15,8 +17,8 @@ const FocusPage: React.FC = () => {
   useEffect(() => {
     if (!pause && timeRemaining > 0) {
       const timer = setInterval(
-        // can't set to lower than 4ms because browsers have a limit
-        () => setTimeRemaining(timeRemaining - 10),
+        // can't set to lower than 4ms because browsers have a limit (seems a bit slower)
+        () => setTimeRemaining(timeRemaining - 11),
         10,
       );
       return () => clearInterval(timer);
@@ -24,13 +26,18 @@ const FocusPage: React.FC = () => {
   }, [pause, timeRemaining]);
   //////////////////////////////////////////////////////
 
+  useEffect(() => {
+    CheckLoginCollection();
+  }, []);
+
   const [openSettings, setOpenSettings] = useState<boolean>(false);
   const [textareaVisible, setTextareaVisible] = useState<boolean>(false);
   const [textareaValue, setTextareaValue] = useState<string>("");
   const [openSearch, setOpenSearch] = useState<boolean>(false);
 
   return (
-    <main>
+    <>
+      <PreventLeave timerOn={!pause} />
       <div className="grid gap-y-10">
         <Navbar />
         <div
@@ -66,7 +73,7 @@ const FocusPage: React.FC = () => {
         setTextareaVisible={setTextareaVisible}
         setOpenSearch={setOpenSearch}
       />
-    </main>
+    </>
   );
 };
 export default FocusPage;

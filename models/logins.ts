@@ -3,24 +3,20 @@ import type { Document } from "mongoose";
 
 export interface ILogin extends Document {
   _id: string;
-  name: string;
   loginTime: Date;
-  consecutiveDays: number;
+  consecutiveDays?: number;
 }
 
 export const LoginSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
   loginTime: {
     type: Date,
     required: true,
+    default: new Date(),
   },
   // keeps track of how many consecutive days from this specific login/sign in
   consecutiveDays: {
     type: Number,
-    required: true,
+    required: false,
   },
 });
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Menu as MenuIcon } from "lucide-react";
 
-function Navbar() {
+function Navbar(): JSX.Element {
   const navItems = [
     { name: "Dashboard", path: "./" },
     { name: "Focus", path: "./focus" },
@@ -31,7 +31,7 @@ function Navbar() {
 
   return (
     <header className="sticky top-0 w-full border-b backdrop-blur-sm">
-      <div className="mr-4 hidden gap-2 md:flex items-center justify-center">
+      <div className="mr-4 hidden gap-2 md:flex items-center justify-center ">
         {result}
       </div>
 

@@ -3,6 +3,8 @@
 import connectDB from "./connect-mongo";
 import Task, { ITask } from "@/models/tasks";
 import SuperTask, { ISuperTask } from "@/models/superTasks";
+import Login, { ILogin } from "@/models/logins";
+import mongoose from "mongoose";
 
 // TODO: Add field to track marathon and normal focus sessions
 
@@ -108,10 +110,49 @@ export async function completeBreak(id: string, elapsedTime: number) {
   }
 }
 
+// TODO: Remove task
 export async function deleteTask(id: string) {
   try {
     await connectDB();
   } catch (error) {
     console.error(error);
   }
+}
+
+// Checks whether the collection exists
+export async function CheckLoginCollection() {
+  await connectDB();
+  console.log("Checking here...");
+  const collections = mongoose.connection.collections;
+
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  const checkConsecutiveDays = async (): Promise<number> => {
+    // returns array
+    const logins = await Login.find({ loginTime: { $lt: currentDate } });
+    // check if there are logins
+
+    if (logins.length !== 0 && logins[0].consecutiveDays) {
+      return logins[0].consecutiveDays + 1;
+    }
+    return 1;
+  };
+
+  let exists = false;
+  for (const collection in collections) {
+    // make sure collection exists
+    if (collection === "logins") {
+      exists = true;
+    }
+  }
+
+  if (!exists) {
+    await Login.createCollection();
+  }
+  const days = await checkConsecutiveDays();
+  await Login.create({
+    loginTime: new Date(),
+    consecutiveDays: days,
+  });
 }
