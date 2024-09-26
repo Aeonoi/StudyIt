@@ -4,7 +4,10 @@ import GoogleSearch from "@/components/GoogleSearch";
 import Navbar from "@/components/Navbar";
 import PreventLeave from "@/components/PreventLeave";
 import Timer from "@/components/Timer";
-import { CheckLoginCollection } from "@/lib/mongo-functions";
+import {
+  CheckLoginCollection,
+  CheckSuperTaskCollection,
+} from "@/lib/mongo-functions";
 import { useEffect, useState } from "react";
 import type React from "react";
 
@@ -28,6 +31,7 @@ const FocusPage: React.FC = () => {
 
   useEffect(() => {
     CheckLoginCollection();
+    CheckSuperTaskCollection();
   }, []);
 
   const [openSettings, setOpenSettings] = useState<boolean>(false);

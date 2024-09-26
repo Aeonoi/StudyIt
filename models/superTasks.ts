@@ -57,5 +57,6 @@ export const SuperTasksSchema = new mongoose.Schema({
 });
 
 const SuperTask =
-  mongoose.models.Task || mongoose.model<SuperTask>("Task", SuperTasksSchema);
+  mongoose.models.SuperTask ||
+  mongoose.model<ISuperTask>("SuperTask", SuperTasksSchema);
 export default SuperTask;

@@ -3,7 +3,8 @@
 import connectDB from "./connect-mongo";
 import Task, { ITask } from "@/models/tasks";
 import SuperTask, { ISuperTask } from "@/models/superTasks";
-import Login, { ILogin } from "@/models/logins";
+import Login from "@/models/logins";
+import type { ILogin } from "@/models/logins";
 import mongoose from "mongoose";
 import { compareTwoDates } from "./useful-functions";
 
@@ -120,7 +121,7 @@ export async function deleteTask(id: string) {
   }
 }
 
-// Checks whether the collection exists
+// Checks whether the login collection exists
 export async function CheckLoginCollection() {
   await connectDB();
 
@@ -133,7 +134,7 @@ export async function CheckLoginCollection() {
   // checks the number of consecutive days from previous document (sorted)
   const checkConsecutiveDays = async (): Promise<number> => {
     // returns array sorted with latest date as first entry
-    const logins = await Login.find({
+    const logins: ILogin[] = await Login.find({
       loginTime: { $lt: currentDate },
     }).sort({
       loginTime: -1,
@@ -171,4 +172,38 @@ export async function CheckLoginCollection() {
     loginTime: new Date(),
     consecutiveDays: days,
   });
+}
+
+// Checks whether the super task collection exists
+export async function CheckSuperTaskCollection() {
+  await connectDB();
+
+  console.log("Checking super task collection here...");
+  const collections = mongoose.connection.collections;
+
+  let exists = false;
+  for (const collection in collections) {
+    // make sure collection exists
+    if (collection === "supertasks") {
+      exists = true;
+    }
+    console.log(collection);
+  }
+
+  if (!exists) {
+    // Contains only one document that is used that contains all information
+    await SuperTask.createCollection();
+  }
+  const supertasks = await SuperTask.find();
+  if (supertasks.length === 0) {
+    await SuperTask.create({
+      name: "Super Task",
+      completedSessions: 0,
+      totalSessions: 0,
+      completedBreaks: 0,
+      totalBreaks: 0,
+      totalStudyingTime: 0,
+      totalBreakTime: 0,
+    });
+  }
 }
