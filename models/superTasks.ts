@@ -3,13 +3,13 @@ import type { Document } from "mongoose";
 
 export interface ISuperTask extends Document {
   _id: string;
-  name: string;
-  completedSessions: number;
-  totalSessions: number;
-  completedBreaks: number;
-  totalBreaks: number;
-  totalStudyingTime: number;
-  totalBreakTime: number;
+  name?: string;
+  completedSessions?: number;
+  totalSessions?: number;
+  completedBreaks?: number;
+  totalBreaks?: number;
+  totalStudyingTime?: number;
+  totalBreakTime?: number;
 }
 
 export const SuperTasksSchema = new mongoose.Schema({

@@ -1,8 +1,9 @@
 "use server";
 // https://stackoverflow.com/questions/77091418/warning-only-plain-objects-can-be-passed-to-client-components-from-server-compo
 import connectDB from "./connect-mongo";
-import Task, { ITask } from "@/models/tasks";
-import SuperTask, { ISuperTask } from "@/models/superTasks";
+import Task from "@/models/tasks";
+import SuperTask from "@/models/superTasks";
+import type { ISuperTask } from "@/models/superTasks";
 import Login from "@/models/logins";
 import type { ILogin } from "@/models/logins";
 import mongoose from "mongoose";
@@ -53,6 +54,15 @@ export async function startTask(id: string) {
       { totalSessions: currentTask.totalSessions + 1 },
       { new: true },
     );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateSuperTask(id: string, content: ISuperTask) {
+  try {
+    await connectDB();
+    await SuperTask.findByIdAndUpdate(id, content, { new: true });
   } catch (error) {
     console.error(error);
   }
