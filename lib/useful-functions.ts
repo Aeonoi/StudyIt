@@ -18,14 +18,14 @@ export function shuffleArray<T>(array: T[]) {
  * @returns Returns whether two dates are consecutive (back-to-back)
  */
 export function compareTwoDates(date1: Date, date2: Date) {
-  const d1: Date = new Date(date1);
-  const d2: Date = new Date(date2);
-
-  d1.setHours(0, 0, 0, 0);
-  d2.setHours(0, 0, 0, 0);
+  // set to use UTC
+  date1.setUTCHours(0, 0, 0, 0);
+  date2.setUTCHours(0, 0, 0, 0);
 
   // Calculate the difference in time (milliseconds) between the two dates
-  const differenceInTime = Math.abs(d1.getTime() - d2.getTime());
+  const differenceInTime = Math.abs(date1.getTime() - date2.getTime());
+  console.log("First date: ", date1);
+  console.log("Second date:", date2);
 
   // Convert the time difference from milliseconds to days
   const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24);

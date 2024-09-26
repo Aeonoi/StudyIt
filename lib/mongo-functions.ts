@@ -128,14 +128,21 @@ export async function CheckLoginCollection() {
   const collections = mongoose.connection.collections;
 
   const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
+  currentDate.setUTCHours(0, 0, 0, 0);
 
   // checks the number of consecutive days from previous document (sorted)
   const checkConsecutiveDays = async (): Promise<number> => {
     // returns array sorted with latest date as first entry
-    const logins = await Login.find({ loginTime: { $lt: currentDate } }).sort({
+    const logins = await Login.find({
+      loginTime: { $lt: currentDate },
+    }).sort({
       loginTime: -1,
     });
+
+    console.log("-----------------------------");
+    console.log(logins[0].loginTime);
+    console.log(currentDate);
+    console.log("-----------------------------");
 
     // check if there are logins
     if (
