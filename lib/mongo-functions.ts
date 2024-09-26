@@ -2,6 +2,7 @@
 // https://stackoverflow.com/questions/77091418/warning-only-plain-objects-can-be-passed-to-client-components-from-server-compo
 import connectDB from "./connect-mongo";
 import Task from "@/models/tasks";
+import type { ITask } from "@/models/tasks";
 import SuperTask from "@/models/superTasks";
 import type { ISuperTask } from "@/models/superTasks";
 import Login from "@/models/logins";
@@ -48,21 +49,35 @@ export async function createTask(name: string) {
 export async function startTask(id: string) {
   try {
     await connectDB();
-    const currentTask = await Task.findById(id);
-    await Task.findByIdAndUpdate(
-      id,
-      { totalSessions: currentTask.totalSessions + 1 },
-      { new: true },
-    );
+    const currentTask: ITask | null = await Task.findById(id);
+    if (currentTask) {
+      await Task.findByIdAndUpdate(
+        id,
+        { totalSessions: currentTask.totalSessions + 1 },
+        { new: true },
+      );
+    }
   } catch (error) {
     console.error(error);
   }
 }
 
-export async function updateSuperTask(id: string, content: ISuperTask) {
+export async function updateSuperTask(content: Partial<ISuperTask>) {
   try {
     await connectDB();
+    await CheckSuperTaskCollection();
+    const supertask: ISuperTask = (await SuperTask.find())[0];
+    const id: string = supertask._id;
     await SuperTask.findByIdAndUpdate(id, content, { new: true });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateDate(id: string) {
+  try {
+    await connectDB();
+    await Task.findByIdAndUpdate(id, { lastDone: new Date() }, { new: true });
   } catch (error) {
     console.error(error);
   }
@@ -171,6 +186,8 @@ export async function CheckLoginCollection() {
     // make sure collection exists
     if (collection === "logins") {
       exists = true;
+      console.log("logins collection exists");
+      break;
     }
   }
 
@@ -188,7 +205,6 @@ export async function CheckLoginCollection() {
 export async function CheckSuperTaskCollection() {
   await connectDB();
 
-  console.log("Checking super task collection here...");
   const collections = mongoose.connection.collections;
 
   let exists = false;
@@ -196,6 +212,8 @@ export async function CheckSuperTaskCollection() {
     // make sure collection exists
     if (collection === "supertasks") {
       exists = true;
+      console.log("supertasks collection exists");
+      break;
     }
     console.log(collection);
   }

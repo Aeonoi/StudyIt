@@ -21,5 +21,5 @@ export const LoginSchema = new mongoose.Schema({
 });
 
 const Login =
-  mongoose.models.Todo || mongoose.model<ILogin>("Login", LoginSchema);
+  mongoose.models.Login || mongoose.model<ILogin>("Login", LoginSchema);
 export default Login;

@@ -3,13 +3,17 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import TimerSettings from "./TimerSettings";
 import SelectTask from "./SelectTask";
-import ReactPlayer from "react-player";
 import {
+  CheckSuperTaskCollection,
   completeBreak,
   completedTask,
   startBreak,
   startTask,
+  updateDate,
+  updateSuperTask,
 } from "@/lib/mongo-functions";
+import SuperTask from "@/models/superTasks";
+import type { ISuperTask } from "@/models/superTasks";
 
 interface Prop {
   time: number;
@@ -59,8 +63,50 @@ const Timer = ({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only thing that matters is the time to check for auto start
   useEffect(() => {
+    // TODO: Play a sound when changing to a different timer
+    // updates the super task document
+    const update = async () => {
+      const response = await fetch("/api/supertasks", { method: "GET" });
+      const supertask = await response.json();
+      switch (timerType) {
+        case "FOCUS":
+          if (supertask.completedSessions && supertask.totalStudyingTime)
+            await updateSuperTask({
+              completedSessions: supertask.completedSessions + 1,
+              totalStudyingTime: supertask.totalStudyingTime + focusTime / 1000,
+            });
+          break;
+        case "BREAK":
+          if (supertask.completedBreaks >= 0 && supertask.totalBreakTime >= 0) {
+            console.log(supertask.totalBreakTime, supertask.completedBreaks);
+            console.log(`supertask exists: ${supertask !== null}`);
+            await updateSuperTask({
+              completedBreaks: supertask.completedBreaks + 1,
+              totalBreakTime: supertask.totalBreakTime + breakTime / 1000,
+            });
+          }
+          break;
+        case "MARATHON":
+          if (supertask.completedSessions && supertask.totalStudyingTime)
+            await updateSuperTask({
+              completedSessions: supertask.completedSessions + 1,
+              totalStudyingTime:
+                supertask.totalStudyingTime + marathonTime / 1000,
+            });
+          break;
+        case "MARATHONBREAK":
+          if (supertask.completedBreaks && supertask.totalBreakTime) {
+            await updateSuperTask({
+              completedBreaks: supertask.completedBreaks + 1,
+              totalBreakTime:
+                supertask.totalBreakTime + marathonBreakTime / 1000,
+            });
+          }
+          break;
+      }
+    };
     if (time <= 0) {
-      // TODO: Play a sound when changing to a different timer
+      update();
       switch (timerType) {
         case "FOCUS":
           setPauseAction(true);
@@ -70,6 +116,7 @@ const Timer = ({
           setStarted(false);
           if (currentSelectedTask) {
             completedTask(currentSelectedTask, focusTime / 1000);
+            updateDate(currentSelectedTask);
           }
           break;
         case "BREAK":
@@ -79,7 +126,7 @@ const Timer = ({
           setCurrentColor("bg-red-100");
           setStarted(false);
           if (currentSelectedTask) {
-            completeBreak(currentSelectedTask, breakTime);
+            completeBreak(currentSelectedTask, breakTime / 1000);
           }
           break;
         case "MARATHON":
@@ -91,6 +138,7 @@ const Timer = ({
           if (currentSelectedTask) {
             completedTask(currentSelectedTask, marathonTime / 1000);
             startBreak(currentSelectedTask);
+            updateDate(currentSelectedTask);
           }
           break;
         case "MARATHONBREAK":
@@ -100,7 +148,8 @@ const Timer = ({
           setCurrentColor("bg-orange-300");
           setStarted(true);
           if (currentSelectedTask) {
-            completeBreak(currentSelectedTask, marathonBreakTime);
+            completeBreak(currentSelectedTask, marathonBreakTime / 1000);
+            startTask(currentSelectedTask);
           }
           break;
       }
