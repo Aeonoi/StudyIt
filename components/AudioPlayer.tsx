@@ -1,8 +1,7 @@
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { fetchVideos } from "@/lib/youtube";
 import {
   PauseIcon,
   PlayIcon,
@@ -102,19 +101,21 @@ const AudioPlayer = (): JSX.Element => {
         setAudio={setVideos}
       />
       {/* FIX: CORS erorrs */}
-      <ReactPlayer
-        url={videos[currentVideoIndex]}
-        width={0}
-        height={0}
-        volume={volume}
-        playing={!pauseMusic}
-        onEnded={() => {
-          // setPauseMusic(true);
-          currentVideoIndex === videos.length - 1
-            ? setCurrentVideoIndex(0)
-            : setCurrentVideoIndex((prev) => prev + 1);
-        }}
-      />
+      <div>
+        <ReactPlayer
+          url={videos[currentVideoIndex]}
+          width={0}
+          height={0}
+          volume={volume}
+          playing={!pauseMusic}
+          onEnded={() => {
+            // setPauseMusic(true);
+            currentVideoIndex === videos.length - 1
+              ? setCurrentVideoIndex(0)
+              : setCurrentVideoIndex((prev) => prev + 1);
+          }}
+        />
+      </div>
     </Card>
   );
 };

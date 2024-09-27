@@ -36,7 +36,7 @@ export async function createTask(name: string) {
       totalSessions: 0,
       completedBreaks: 0,
       totalBreaks: 0,
-      totalStudyingTime: 0,
+      totalFocusTime: 0,
       totalBreakTime: 0,
     });
     return JSON.parse(JSON.stringify(newTask));
@@ -92,7 +92,7 @@ export async function completedTask(id: string, elapsedTime: number) {
       id,
       {
         completedSessions: currentTask.completedSessions + 1,
-        totalStudyingTime: currentTask.totalStudyingTime + elapsedTime,
+        totalFocusTime: currentTask.totalFocusTime + elapsedTime,
         lastDone: new Date(),
       },
       { new: true },
@@ -230,8 +230,34 @@ export async function CheckSuperTaskCollection() {
       totalSessions: 0,
       completedBreaks: 0,
       totalBreaks: 0,
-      totalStudyingTime: 0,
+      totalFocusTime: 0,
       totalBreakTime: 0,
     });
   }
+}
+
+export async function getUniqueDates() {
+  const uniqueDates: ILogin[] = await Login.aggregate([
+    {
+      $group: {
+        _id: {
+          day: { $dayOfMonth: "$loginTime" },
+          month: { $month: "$loginTime" },
+          year: { $year: "$loginTime" },
+        },
+        uniqueDate: { $first: "$loginTime" },
+      },
+    },
+    {
+      $sort: { uniqueDate: 1 }, // Sorting the dates in ascending order
+    },
+    {
+      $project: {
+        _id: 0,
+        uniqueDate: 1,
+      },
+    },
+  ]);
+
+  return uniqueDates;
 }

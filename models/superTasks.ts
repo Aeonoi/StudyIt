@@ -5,10 +5,9 @@ export interface ISuperTask extends Document {
   _id: string;
   name?: string;
   completedSessions?: number;
-  totalSessions?: number;
   completedBreaks?: number;
   totalBreaks?: number;
-  totalStudyingTime?: number;
+  totalFocusTime?: number;
   totalBreakTime?: number;
 }
 
@@ -43,7 +42,7 @@ export const SuperTasksSchema = new mongoose.Schema({
     required: true,
   },
   // total studying time in seconds
-  totalStudyingTime: {
+  totalFocusTime: {
     type: Number,
     min: 0,
     required: true,

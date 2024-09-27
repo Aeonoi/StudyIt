@@ -34,3 +34,12 @@ export function compareTwoDates(date1: Date, date2: Date) {
   // Check if the difference is exactly 1 day
   return differenceInDays === 1;
 }
+
+export function convertSecondsToMinutes(time: number) {
+  console.log(time / 60);
+  return time / 60;
+}
+
+export function convertMsToMinutes(time: number) {
+  return time * 1000 * 60;
+}

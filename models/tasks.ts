@@ -10,7 +10,7 @@ export interface ITask extends Document {
   totalSessions: number;
   completedBreaks: number;
   totalBreaks: number;
-  totalStudyingTime: number;
+  totalFocusTime: number;
   totalBreakTime: number;
 }
 
@@ -55,7 +55,7 @@ export const TasksSchema = new mongoose.Schema({
     required: true,
   },
   // total studying time in seconds
-  totalStudyingTime: {
+  totalFocusTime: {
     type: Number,
     min: 0,
     required: true,

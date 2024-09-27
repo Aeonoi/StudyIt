@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import TimerSettings from "./TimerSettings";
 import SelectTask from "./SelectTask";
 import {
-  CheckSuperTaskCollection,
   completeBreak,
   completedTask,
   startBreak,
@@ -12,8 +11,6 @@ import {
   updateDate,
   updateSuperTask,
 } from "@/lib/mongo-functions";
-import SuperTask from "@/models/superTasks";
-import type { ISuperTask } from "@/models/superTasks";
 
 interface Prop {
   time: number;
@@ -70,10 +67,10 @@ const Timer = ({
       const supertask = await response.json();
       switch (timerType) {
         case "FOCUS":
-          if (supertask.completedSessions && supertask.totalStudyingTime)
+          if (supertask.completedSessions && supertask.totalFocusTime)
             await updateSuperTask({
               completedSessions: supertask.completedSessions + 1,
-              totalStudyingTime: supertask.totalStudyingTime + focusTime / 1000,
+              totalFocusTime: supertask.totalFocusTime + focusTime / 1000,
             });
           break;
         case "BREAK":
@@ -87,11 +84,10 @@ const Timer = ({
           }
           break;
         case "MARATHON":
-          if (supertask.completedSessions && supertask.totalStudyingTime)
+          if (supertask.completedSessions && supertask.totalFocusTime)
             await updateSuperTask({
               completedSessions: supertask.completedSessions + 1,
-              totalStudyingTime:
-                supertask.totalStudyingTime + marathonTime / 1000,
+              totalFocusTime: supertask.totalFocusTime + marathonTime / 1000,
             });
           break;
         case "MARATHONBREAK":
