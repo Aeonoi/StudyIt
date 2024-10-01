@@ -1,20 +1,27 @@
+// TODO: Marathons should be included for focuses created
+// TODO: Play a sound when changing to a different timer
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import TimerSettings from "./TimerSettings";
 import SelectTask from "./SelectTask";
 import {
-  completeBreak,
-  completedTask,
+  completeTask,
+  createFocus,
   startBreak,
   startTask,
-  updateDate,
   updateSuperTask,
+  completeBreak,
+  updateTask,
+  updateFocus,
+  getSupertask,
+  completeFocusSuperTask,
+  completeBreakSuperTask,
 } from "@/lib/mongo-functions";
+import type { ISuperTask } from "@/models/superTasks";
+import { convertMsToSeconds, debug_print } from "@/lib/useful-functions";
 
 interface Prop {
-  time: number;
-  setTimeRemaining: React.Dispatch<React.SetStateAction<number>>;
   pauseState: boolean;
   setPauseAction: React.Dispatch<React.SetStateAction<boolean>>;
   openSettingsState: boolean;
@@ -37,8 +44,6 @@ const calculateTime = (time: number): string => {
 // TODO: surround the timer clock with a progress bar
 /* Controls the entire card containing the timer and the timer */
 const Timer = ({
-  time,
-  setTimeRemaining,
   pauseState,
   setPauseAction,
   openSettingsState,
@@ -52,106 +57,111 @@ const Timer = ({
 
   const [timerType, setTimerType] = useState<string>("FOCUS");
 
+  // contains the id that correlates with the current focus
+  const [currentFocus, setCurrentFocus] = useState<string>("");
+
+  // time that is shown to the user
+  const [time, setTime] = useState<number>(1500000);
+  // stores the total time focused before updating documents
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+
+  const [supertask, setSupertask] = useState<ISuperTask | null>(null);
+
+  useEffect(() => {
+    const fetchSupertask = async () => {
+      const supertask = await getSupertask();
+      setSupertask(supertask);
+    };
+    fetchSupertask();
+  }, []);
+
+  // make up for the lost time
+  const timeDec = 350;
+
+  useEffect(() => {
+    if (!pauseState && time > 0) {
+      const timer = setInterval(async () => {
+        setTime(time - 15000000);
+        setElapsedTime((prev) => prev + timeDec);
+      }, timeDec);
+      return () => clearInterval(timer);
+    }
+  }, [pauseState, time]);
+
+  // pause timer when opening settings
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (openSettingsState === true) {
       setPauseAction(true);
     }
-  }, [openSettingsState, setPauseAction]);
+  }, [openSettingsState]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (pauseState && elapsedTime > 0) {
+      update();
+    }
+  }, [pauseState]);
+
+  const update = async () => {
+    updateTask(currentSelectedTask, convertMsToSeconds(elapsedTime), timerType);
+    updateSuperTask(convertMsToSeconds(elapsedTime), timerType);
+    if (timerType === "FOCUS" || timerType === "MARATHON") {
+      debug_print([elapsedTime.toString(), currentFocus]);
+      updateFocus(currentFocus, convertMsToSeconds(elapsedTime));
+    }
+    setElapsedTime(0);
+  };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only thing that matters is the time to check for auto start
   useEffect(() => {
-    // TODO: Play a sound when changing to a different timer
-    // updates the super task document
-    const update = async () => {
-      const response = await fetch("/api/supertasks", { method: "GET" });
-      const supertask = await response.json();
-      switch (timerType) {
-        case "FOCUS":
-          if (supertask.completedSessions && supertask.totalFocusTime)
-            await updateSuperTask({
-              completedSessions: supertask.completedSessions + 1,
-              totalFocusTime: supertask.totalFocusTime + focusTime / 1000,
-            });
-          break;
-        case "BREAK":
-          if (supertask.completedBreaks >= 0 && supertask.totalBreakTime >= 0) {
-            console.log(supertask.totalBreakTime, supertask.completedBreaks);
-            console.log(`supertask exists: ${supertask !== null}`);
-            await updateSuperTask({
-              completedBreaks: supertask.completedBreaks + 1,
-              totalBreakTime: supertask.totalBreakTime + breakTime / 1000,
-            });
-          }
-          break;
-        case "MARATHON":
-          if (supertask.completedSessions && supertask.totalFocusTime)
-            await updateSuperTask({
-              completedSessions: supertask.completedSessions + 1,
-              totalFocusTime: supertask.totalFocusTime + marathonTime / 1000,
-            });
-          break;
-        case "MARATHONBREAK":
-          if (supertask.completedBreaks && supertask.totalBreakTime) {
-            await updateSuperTask({
-              completedBreaks: supertask.completedBreaks + 1,
-              totalBreakTime:
-                supertask.totalBreakTime + marathonBreakTime / 1000,
-            });
-          }
-          break;
-      }
-    };
+    // timer finished
     if (time <= 0) {
       update();
       switch (timerType) {
         case "FOCUS":
           setPauseAction(true);
-          setTimeRemaining(breakTime);
+          setTime(breakTime);
           setTimerType("BREAK");
           setCurrentColor("bg-blue-500");
           setStarted(false);
-          if (currentSelectedTask) {
-            completedTask(currentSelectedTask, focusTime / 1000);
-            updateDate(currentSelectedTask);
-          }
+          completeTask(currentSelectedTask);
+          completeFocusSuperTask();
           break;
         case "BREAK":
           setPauseAction(true);
-          setTimeRemaining(focusTime);
+          setTime(focusTime);
           setTimerType("FOCUS");
           setCurrentColor("bg-red-100");
           setStarted(false);
-          if (currentSelectedTask) {
-            completeBreak(currentSelectedTask, breakTime / 1000);
-          }
+          completeBreak(currentSelectedTask);
+          completeBreakSuperTask();
           break;
         case "MARATHON":
           setPauseAction(false);
-          setTimeRemaining(marathonBreakTime);
+          setTime(marathonBreakTime);
           setTimerType("MARATHONBREAK");
           setCurrentColor("bg-blue-500");
           setStarted(true);
-          if (currentSelectedTask) {
-            completedTask(currentSelectedTask, marathonTime / 1000);
-            startBreak(currentSelectedTask);
-            updateDate(currentSelectedTask);
-          }
+          completeTask(currentSelectedTask);
+          startBreak(currentSelectedTask);
+          completeFocusSuperTask();
           break;
         case "MARATHONBREAK":
           setPauseAction(false);
-          setTimeRemaining(marathonTime);
+          setTime(marathonTime);
           setTimerType("MARATHON");
           setCurrentColor("bg-orange-300");
           setStarted(true);
-          if (currentSelectedTask) {
-            completeBreak(currentSelectedTask, marathonBreakTime / 1000);
-            startTask(currentSelectedTask);
-          }
+          completeBreak(currentSelectedTask);
+          startTask(currentSelectedTask);
+          completeBreakSuperTask();
           break;
       }
     }
   }, [time]);
 
+  // TODO: Task's totalSessions increment when doing a break
   // set color of the circle timer
   const [currentColor, setCurrentColor] = useState("bg-red-100");
 
@@ -160,10 +170,18 @@ const Timer = ({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only care about when the task has been started
   useEffect(() => {
-    if (started && currentSelectedTask) {
+    if (started && (timerType === "MARATHON" || timerType === "FOCUS")) {
       startTask(currentSelectedTask);
     }
   }, [started]);
+
+  // reset the states
+  const reset = () => {
+    setPauseAction(true);
+    setStarted(false);
+    setCurrentFocus("");
+    setElapsedTime(0);
+  };
 
   // TODO: use useState to set the different colors for each timer, usefuil for changing theme/colors from settings
 
@@ -179,33 +197,30 @@ const Timer = ({
         <div className="grid grid-cols-3 gap-3 items-center justify-center">
           <Button
             onClick={() => {
-              setTimeRemaining(focusTime);
+              setTime(focusTime);
               setCurrentColor("bg-red-100");
               setTimerType("FOCUS");
-              setPauseAction(true);
-              setStarted(false);
+              reset();
             }}
           >
             Focus
           </Button>
           <Button
             onClick={() => {
-              setTimeRemaining(marathonTime);
+              setTime(marathonTime);
               setCurrentColor("bg-orange-300");
               setTimerType("MARATHON");
-              setPauseAction(true);
-              setStarted(false);
+              reset();
             }}
           >
             Marathon
           </Button>
           <Button
             onClick={() => {
-              setTimeRemaining(breakTime);
+              setTime(breakTime);
               setCurrentColor("bg-blue-500");
               setTimerType("BREAK");
-              setPauseAction(true);
-              setStarted(false);
+              reset();
             }}
           >
             Break
@@ -217,11 +232,17 @@ const Timer = ({
           variant="outline"
           className={`font-bold text-white text-7xl rounded-full ${currentColor} flex items-center justify-center font-mono `}
           style={{ width: "100%", height: "100%", aspectRatio: "1/1" }}
-          onClick={() => {
+          onClick={async () => {
             setPauseAction(!pauseState);
             setStarted(true);
             if (currentSelectedTask && timerType === "BREAK") {
               startBreak(currentSelectedTask);
+            }
+            if (
+              (currentFocus === "" && timerType === "FOCUS") ||
+              timerType === "MARATHON"
+            ) {
+              setCurrentFocus(await createFocus(currentSelectedTask));
             }
           }}
         >
@@ -239,7 +260,7 @@ const Timer = ({
         setMarathonTime={setMarathonTime}
         marathonBreakTime={marathonBreakTime}
         setMarathonBreakTime={setMarathonBreakTime}
-        setRemainingTime={setTimeRemaining}
+        setRemainingTime={setTime}
         timerType={timerType}
       />
     </Card>

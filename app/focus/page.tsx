@@ -13,21 +13,7 @@ import type React from "react";
 
 /* The elements of the focus page */
 const FocusPage: React.FC = () => {
-  // timer
-  const [timeRemaining, setTimeRemaining] = useState<number>(1500000);
   const [pause, setPause] = useState<boolean>(true);
-
-  useEffect(() => {
-    if (!pause && timeRemaining > 0) {
-      const timer = setInterval(
-        // can't set to lower than 4ms because browsers have a limit (seems a bit slower)
-        () => setTimeRemaining(timeRemaining - 11),
-        10,
-      );
-      return () => clearInterval(timer);
-    }
-  }, [pause, timeRemaining]);
-  //////////////////////////////////////////////////////
 
   useEffect(() => {
     CheckLoginCollection();
@@ -49,8 +35,6 @@ const FocusPage: React.FC = () => {
         >
           <GoogleSearch openSearch={openSearch} setOpenSearch={setOpenSearch} />
           <Timer
-            time={timeRemaining}
-            setTimeRemaining={setTimeRemaining}
             pauseState={pause}
             setPauseAction={setPause}
             openSettingsState={openSettings}

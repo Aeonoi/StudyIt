@@ -36,10 +36,22 @@ export function compareTwoDates(date1: Date, date2: Date) {
 }
 
 export function convertSecondsToMinutes(time: number) {
-  console.log(time / 60);
   return time / 60;
 }
 
 export function convertMsToMinutes(time: number) {
-  return time * 1000 * 60;
+  return (time / 1000) * 60;
+}
+
+export function convertMsToSeconds(time: number) {
+  return time / 1000;
+}
+
+export function debug_print(args: string[] = []) {
+  console.log("----------------------------------------------------");
+  console.log("DEBUG HERE");
+  args.map((arg, index) => {
+    console.log(`val ${index}: ${arg}`);
+  });
+  console.log("----------------------------------------------------");
 }

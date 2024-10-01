@@ -8,7 +8,7 @@ import type { ISuperTask } from "@/models/superTasks";
 import Login from "@/models/logins";
 import type { ILogin } from "@/models/logins";
 import mongoose from "mongoose";
-import { compareTwoDates } from "./useful-functions";
+import { compareTwoDates, debug_print } from "./useful-functions";
 import Focuses from "@/models/focuses";
 import type { IFocus } from "@/models/focuses";
 
@@ -29,22 +29,72 @@ export async function getAllTasks() {
 export async function createFocus(id = "") {
   try {
     await connectDB();
-    return await Focuses.create({
+    const focus = await Focuses.create({
       createdDate: new Date(),
       time: 0,
       task: id,
       completed: false,
     });
+    return focus._id.toString();
   } catch (error) {
     console.error(error);
   }
 }
 
-// @param id - The id that is associated with a focus
-export async function updateFocus(id: string, content: Partial<IFocus>) {
+export async function updateFocus(id: string, time: number) {
   try {
+    if (id === "") {
+      return;
+    }
     await connectDB();
-    await Focuses.findByIdAndUpdate(id, content, { new: true });
+    const focus = await Focuses.findById(id);
+    await Focuses.findByIdAndUpdate(
+      id,
+      { time: focus.time + time },
+      {
+        new: true,
+      },
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateFocusTask(id: string, taskId: string) {
+  try {
+    if (id === "" || taskId === "") {
+      return;
+    }
+    await connectDB();
+    const task = await Task.findById(taskId);
+    // check if taskId provided is correct
+    if (task) {
+      await Focuses.findByIdAndUpdate(id, { task: taskId }, { new: true });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function finishFocus(id: string) {
+  try {
+    if (id === "") {
+      return;
+    }
+    await connectDB();
+    await Focuses.findByIdAndUpdate(id, { completed: true }, { new: true });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getFocus(id: string) {
+  try {
+    if (id === "") {
+      return;
+    }
+    await connectDB();
+    return JSON.parse(JSON.stringify(await Focuses.findById(id)));
   } catch (error) {
     console.error(error);
   }
@@ -75,6 +125,9 @@ export async function createTask(name: string) {
 /* Updates the number of sessions a task has undergone */
 export async function startTask(id: string) {
   try {
+    if (id === "") {
+      return;
+    }
     await connectDB();
     const currentTask: ITask | null = await Task.findById(id);
     if (currentTask) {
@@ -89,38 +142,18 @@ export async function startTask(id: string) {
   }
 }
 
-export async function updateSuperTask(content: Partial<ISuperTask>) {
-  try {
-    await connectDB();
-    await CheckSuperTaskCollection();
-    const supertask: ISuperTask = (await SuperTask.find())[0];
-    const id: string = supertask._id;
-    await SuperTask.findByIdAndUpdate(id, content, { new: true });
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// updates the last done date for a certain task
-export async function updateDate(id: string) {
-  try {
-    await connectDB();
-    await Task.findByIdAndUpdate(id, { lastDone: new Date() }, { new: true });
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 /* Increments the number of sessions a task has completed (old += 1) */
-export async function completedTask(id: string, elapsedTime: number) {
+export async function completeTask(id: string) {
   try {
+    if (id === "") {
+      return;
+    }
     await connectDB();
     const currentTask = await Task.findById(id);
     const task = await Task.findByIdAndUpdate(
       id,
       {
         completedSessions: currentTask.completedSessions + 1,
-        totalFocusTime: currentTask.totalFocusTime + elapsedTime,
         lastDone: new Date(),
       },
       { new: true },
@@ -131,35 +164,32 @@ export async function completedTask(id: string, elapsedTime: number) {
   }
 }
 
-/* Updates the tottal number of breaks  */
-export async function startBreak(id: string) {
+/* Updates a task time */
+export async function updateTask(id: string, time: number, type: string) {
   try {
+    if (id === "") {
+      return;
+    }
     await connectDB();
     const currentTask = await Task.findById(id);
-    await Task.findByIdAndUpdate(
-      id,
-      { totalSessions: currentTask.totalSessions + 1 },
-      { new: true },
-    );
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-/* Increments the number of breaks that has been completed (old += 1) */
-export async function completeBreak(id: string, elapsedTime: number) {
-  try {
-    await connectDB();
-    const currentTask = await Task.findById(id);
-    const task = await Task.findByIdAndUpdate(
-      id,
-      {
-        completedSessions: currentTask.completedSessions + 1,
-        totalTime: currentTask.totalTime + elapsedTime,
-      },
-      { new: true },
-    );
-    console.log(JSON.parse(JSON.stringify(task)));
+    if (type === "BREAK" || type === "MARATHONBREAK") {
+      const task = await Task.findByIdAndUpdate(
+        id,
+        {
+          totalBreakTime: currentTask.totalBreakTime + time,
+        },
+        { new: true },
+      );
+    }
+    if (type === "FOCUS" || type === "MARATHON") {
+      const task = await Task.findByIdAndUpdate(
+        id,
+        {
+          totalFocusTime: currentTask.totalFocusTime + time,
+        },
+        { new: true },
+      );
+    }
   } catch (error) {
     console.error(error);
   }
@@ -169,6 +199,122 @@ export async function completeBreak(id: string, elapsedTime: number) {
 export async function deleteTask(id: string) {
   try {
     await connectDB();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getTask(id: string) {
+  try {
+    if (id === "") {
+      return;
+    }
+    await connectDB();
+    return JSON.parse(JSON.stringify(await Task.findById(id)));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateSuperTask(time: number, type: string) {
+  try {
+    await connectDB();
+    await CheckSuperTaskCollection();
+    const supertask: ISuperTask = (await SuperTask.find())[0];
+    const id: string = supertask._id;
+    if (type === "FOCUS" || type === "MARATHON") {
+      await SuperTask.findByIdAndUpdate(
+        id,
+        { totalFocusTime: supertask.totalFocusTime + time },
+        { new: true },
+      );
+    } else if (type === "BREAK" || type === "MARATHONBREAK") {
+      await SuperTask.findByIdAndUpdate(
+        id,
+        { totalBreakTime: supertask.totalBreakTime + time },
+        { new: true },
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function completeFocusSuperTask() {
+  try {
+    await connectDB();
+    await CheckSuperTaskCollection();
+    const supertask: ISuperTask = (await SuperTask.find())[0];
+    const id: string = supertask._id;
+    await SuperTask.findByIdAndUpdate(
+      id,
+      { completedSessions: supertask.completedSessions + 1 },
+      { new: true },
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function completeBreakSuperTask() {
+  try {
+    await connectDB();
+    await CheckSuperTaskCollection();
+    const supertask: ISuperTask = (await SuperTask.find())[0];
+    const id: string = supertask._id;
+    await SuperTask.findByIdAndUpdate(
+      id,
+      { completedBreaks: supertask.completedBreaks + 1 },
+      { new: true },
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getSupertask() {
+  try {
+    await connectDB();
+    return JSON.parse(JSON.stringify((await SuperTask.find())[0]));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/* Updates the tottal number of breaks  */
+export async function startBreak(id: string) {
+  try {
+    if (id === "") {
+      return;
+    }
+    await connectDB();
+    const currentTask = await Task.findById(id);
+    await Task.findByIdAndUpdate(
+      id,
+      { totalBreaks: currentTask.totalBreaks + 1 },
+      { new: true },
+    );
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function completeBreak(id: string) {
+  try {
+    if (id === "") {
+      return;
+    }
+    await connectDB();
+    const currentTask = await Task.findById(id);
+    console.log("------------------------------------------");
+    console.log(currentTask);
+    const task = await Task.findByIdAndUpdate(
+      id,
+      { completedBreaks: currentTask.completedBreaks + 1 },
+      { new: true },
+    );
+    console.log(task);
+    console.log("------------------------------------------");
   } catch (error) {
     console.error(error);
   }
