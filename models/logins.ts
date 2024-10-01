@@ -4,7 +4,7 @@ import type { Document } from "mongoose";
 export interface ILogin extends Document {
   _id: string;
   loginTime: Date;
-  consecutiveDays?: number;
+  consecutiveDays: number;
 }
 
 export const LoginSchema = new mongoose.Schema({
