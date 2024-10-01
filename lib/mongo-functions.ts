@@ -9,6 +9,8 @@ import Login from "@/models/logins";
 import type { ILogin } from "@/models/logins";
 import mongoose from "mongoose";
 import { compareTwoDates } from "./useful-functions";
+import Focuses from "@/models/focuses";
+import type { IFocus } from "@/models/focuses";
 
 // TODO: Add field to track marathon and normal focus sessions
 
@@ -18,6 +20,31 @@ export async function getAllTasks() {
     await connectDB();
     const allTasks = await Task.find();
     return JSON.parse(JSON.stringify(allTasks));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// @param id - The id of the task that it is associated with (optional)
+export async function createFocus(id = "") {
+  try {
+    await connectDB();
+    return await Focuses.create({
+      createdDate: new Date(),
+      time: 0,
+      task: id,
+      completed: false,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// @param id - The id that is associated with a focus
+export async function updateFocus(id: string, content: Partial<IFocus>) {
+  try {
+    await connectDB();
+    await Focuses.findByIdAndUpdate(id, content, { new: true });
   } catch (error) {
     console.error(error);
   }
@@ -74,6 +101,7 @@ export async function updateSuperTask(content: Partial<ISuperTask>) {
   }
 }
 
+// updates the last done date for a certain task
 export async function updateDate(id: string) {
   try {
     await connectDB();
