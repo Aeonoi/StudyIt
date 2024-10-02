@@ -2,9 +2,9 @@
 
 ### Dashboard: 
 
-* [ ] Static Cards (Widgets): Total timed, total days using the application, logging in streak, average study time per session 
+* [x] Static Cards (Widgets): Total timed, total days using the application, logging in streak, average study time per session 
 * [ ] Pie Chart: Hours spread out for each different course/class/subject
-* [ ] Bar Chart: Hours spent on different assignments/tests, etc.
+* [x] Bar Chart: Hours spent on different assignments/tests, etc.
 * [ ] Line Chart: The total time spent throughout the month (or year)
 * [ ] Current rank, progress of milestone 
 * [ ] Current calendar that contains all the deadlines or any scheduled studying sessions (should be interactive, can add dates and deadlines)
