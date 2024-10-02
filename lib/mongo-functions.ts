@@ -330,6 +330,12 @@ export async function CheckLoginCollection() {
   const currentDate = new Date();
   currentDate.setUTCHours(0, 0, 0, 0);
 
+  const lastLogin: ILogin = (
+    await Login.find({}).sort({
+      loginTime: -1,
+    })
+  )[0];
+
   // checks the number of consecutive days from previous document (sorted)
   const checkConsecutiveDays = async (): Promise<number> => {
     // returns array sorted with latest date as first entry
@@ -338,17 +344,11 @@ export async function CheckLoginCollection() {
     }).sort({
       loginTime: -1,
     });
-
-    console.log("-----------------------------");
-    console.log(logins[0].loginTime);
-    console.log(currentDate);
-    console.log("-----------------------------");
-
     // check if there are logins
     if (
       logins.length !== 0 &&
       logins[0].consecutiveDays &&
-      compareTwoDates(currentDate, logins[0].loginTime)
+      compareTwoDates(currentDate, logins[0].loginTime) === 1
     ) {
       return logins[0].consecutiveDays + 1;
     }
@@ -369,10 +369,12 @@ export async function CheckLoginCollection() {
     await Login.createCollection();
   }
   const days = await checkConsecutiveDays();
-  await Login.create({
-    loginTime: new Date(),
-    consecutiveDays: days,
-  });
+  if (compareTwoDates(lastLogin.loginTime, currentDate) !== 0) {
+    await Login.create({
+      loginTime: new Date(),
+      consecutiveDays: days,
+    });
+  }
 }
 
 // Checks whether the super task collection exists
