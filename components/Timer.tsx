@@ -81,7 +81,7 @@ const Timer = ({
   useEffect(() => {
     if (!pauseState && time > 0) {
       const timer = setInterval(async () => {
-        setTime(time - 15000000);
+        setTime(time - timeDec);
         setElapsedTime((prev) => prev + timeDec);
       }, timeDec);
       return () => clearInterval(timer);
