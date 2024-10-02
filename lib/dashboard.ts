@@ -15,6 +15,12 @@ interface Tasks {
   hours: number;
 }
 
+// key-value pair
+export interface TaskFocus {
+  name: string;
+  value: number;
+}
+
 export async function getTotalMinutesStudied(): Promise<number | undefined> {
   try {
     await connectDB();
@@ -81,14 +87,18 @@ export async function averageStudyTime(): Promise<number | undefined> {
 }
 
 // @returns All tasks with their name and their total focus time
-export async function getAllTasks(): Promise<Tasks[] | undefined> {
+export async function getAllTasks(): Promise<TaskFocus[] | undefined> {
   try {
     await connectDB();
     const tasks: ITask[] = await Task.find();
-    const ret: Tasks[] = new Array();
+    // const ret: Tasks[] = new Array();
+    const ret: TaskFocus[] = new Array();
 
     tasks.map(async (item) => {
-      ret.push({ name: item.name, hours: item.totalFocusTime });
+      ret.push({
+        name: item.name,
+        value: Number(item.totalFocusTime.toFixed(2)),
+      });
     });
     return ret;
   } catch (error) {
