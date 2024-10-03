@@ -1,3 +1,5 @@
+import type { IFocus } from "@/models/focuses";
+
 export function shuffleArray<T>(array: T[]) {
   let j: number;
   let i: number;
@@ -17,7 +19,7 @@ export function shuffleArray<T>(array: T[]) {
  * @param date2 - The second date
  * @returns Returns the difference (in days) between the two dates
  */
-export function compareTwoDates(date1: Date, date2: Date) {
+export function compareTwoDates(date1: Date, date2: Date): number {
   // set to use UTC
   date1.setUTCHours(0, 0, 0, 0);
   date2.setUTCHours(0, 0, 0, 0);
@@ -32,19 +34,33 @@ export function compareTwoDates(date1: Date, date2: Date) {
   return differenceInDays;
 }
 
-export function convertSecondsToMinutes(time: number) {
+export function convertSecondsToMinutes(time: number): number {
   return time / 60;
 }
 
-export function convertMsToMinutes(time: number) {
+export function convertMsToMinutes(time: number): number {
   return (time / 1000) * 60;
 }
 
-export function convertMsToSeconds(time: number) {
+export function convertMsToSeconds(time: number): number {
   return time / 1000;
 }
 
-export function debug_print(args: string[] = []) {
+export function exportISOString(date: Date): string {
+  return `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()}`;
+}
+
+export function getGroupedTotalFocusTime(arr: IFocus[]) {
+  let ret = 0;
+  arr.map((focus) => {
+    ret += focus.time;
+  });
+  Number(ret.toFixed(2));
+  return ret;
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: only for debugging
+export function debug_print(args: any[] = []) {
   console.log("----------------------------------------------------");
   console.log("DEBUG HERE");
   args.map((arg, index) => {

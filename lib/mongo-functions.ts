@@ -437,3 +437,59 @@ export async function getUniqueDates() {
 
   return uniqueDates;
 }
+
+export interface GroupedFocuses {
+  _id: string; // date
+  documents: IFocus[];
+}
+
+// @returns An array of JSON objects with _id being the date sorted by days
+export async function getGroupedFocusesByDay() {
+  const focuses: GroupedFocuses[] = await Focuses.aggregate([
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdDate" } },
+        documents: { $push: "$$ROOT" },
+      },
+    },
+    {
+      $sort: { _id: -1 },
+    },
+  ]);
+
+  return focuses;
+}
+
+// @returns An array of JSON objects with _id being the date sorted by months
+export async function getGroupedFocusesByMonth() {
+  const focuses: GroupedFocuses[] = await Focuses.aggregate([
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$createdDate" } },
+        documents: { $push: "$$ROOT" },
+      },
+    },
+    {
+      $sort: { _id: -1 },
+    },
+  ]);
+
+  return focuses;
+}
+
+// @returns An array of JSON objects with _id being the date sorted by year
+export async function getGroupedFocusesByYear() {
+  const focuses: GroupedFocuses[] = await Focuses.aggregate([
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y", date: "$createdDate" } },
+        documents: { $push: "$$ROOT" },
+      },
+    },
+    {
+      $sort: { _id: -1 },
+    },
+  ]);
+
+  return focuses;
+}

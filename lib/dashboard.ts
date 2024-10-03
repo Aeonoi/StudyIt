@@ -5,15 +5,20 @@ import Login from "@/models/logins";
 import type { ISuperTask } from "@/models/superTasks";
 import type { ILogin } from "@/models/logins";
 import connectDB from "./connect-mongo";
-import { convertSecondsToMinutes } from "./useful-functions";
+import {
+  compareTwoDates,
+  convertSecondsToMinutes,
+  getGroupedTotalFocusTime,
+} from "./useful-functions";
 import Task from "@/models/tasks";
 import type { ITask } from "@/models/tasks";
-import { getUniqueDates } from "./mongo-functions";
-
-interface Tasks {
-  name: string;
-  hours: number;
-}
+import {
+  getGroupedFocusesByDay,
+  getGroupedFocusesByMonth,
+  getGroupedFocusesByYear,
+  getUniqueDates,
+  type GroupedFocuses,
+} from "./mongo-functions";
 
 // key-value pair
 export interface TaskFocus {
@@ -49,7 +54,6 @@ export async function getTotalMinutesBreak(): Promise<number | undefined> {
   }
 }
 
-// TODO: Returns the number of unique login dates
 export async function totalLogins() { }
 
 export async function getLoginStreak(): Promise<number | undefined> {
@@ -76,31 +80,13 @@ export async function averageStudyTime(): Promise<number | undefined> {
     const supertask: ISuperTask = (await SuperTask.find())[0];
 
     if (supertask?.completedSessions && supertask.totalFocusTime) {
-      return convertSecondsToMinutes(
-        supertask.totalFocusTime / supertask.completedSessions,
+      return Number(
+        convertSecondsToMinutes(
+          supertask.totalFocusTime / supertask.completedSessions,
+        ).toFixed(2),
       );
     }
     return 0;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// @returns All tasks with their name and their total focus time
-export async function getAllTasks(): Promise<TaskFocus[] | undefined> {
-  try {
-    await connectDB();
-    const tasks: ITask[] = await Task.find();
-    // const ret: Tasks[] = new Array();
-    const ret: TaskFocus[] = new Array();
-
-    tasks.map(async (item) => {
-      ret.push({
-        name: item.name,
-        value: Number(item.totalFocusTime.toFixed(2)),
-      });
-    });
-    return ret;
   } catch (error) {
     console.error(error);
   }
@@ -130,10 +116,100 @@ export async function getTotalStudyingTime(): Promise<number | undefined> {
     let total = 0;
     tasks.map((task) => {
       if (task.totalFocusTime) {
-        total += task.totalFocusTime;
+        total += convertSecondsToMinutes(task.totalFocusTime);
       }
     });
-    return total;
+    return Number(total.toFixed(2));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////
+// Chart                                                            //
+//////////////////////////////////////////////////////////////////////
+
+// @returns All tasks with their name and their total focus time
+export async function getAllTasks(): Promise<TaskFocus[] | undefined> {
+  try {
+    await connectDB();
+    const tasks: ITask[] = await Task.find();
+    const ret: TaskFocus[] = new Array();
+
+    tasks.map(async (item) => {
+      ret.push({
+        name: item.name,
+        value: Number(item.totalFocusTime.toFixed(2)),
+      });
+    });
+    return ret;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getTotalFocusTime(): Promise<TaskFocus[] | undefined> {
+  try {
+    await connectDB();
+    let allFocuses: GroupedFocuses[] = await getGroupedFocusesByDay();
+    const ret: TaskFocus[] = new Array();
+    // case of having no/few focuses
+
+    // no focuses
+    if (allFocuses.length === 0) {
+      return [];
+    }
+    if (allFocuses.length === 1) {
+      return [
+        {
+          name: allFocuses[0]._id,
+          value: getGroupedTotalFocusTime(allFocuses[0].documents),
+        },
+      ];
+    }
+    if (allFocuses.length === 2) {
+      return [
+        {
+          name: allFocuses[0]._id,
+          value: getGroupedTotalFocusTime(allFocuses[0].documents),
+        },
+        {
+          name: allFocuses[1]._id,
+          value: getGroupedTotalFocusTime(allFocuses[1].documents),
+        },
+      ];
+    }
+
+    // compare the first and last ._id and see if they are different in 30 days or more
+    const focus1: GroupedFocuses = allFocuses[0];
+    const focus2: GroupedFocuses = allFocuses[allFocuses.length - 1];
+    const difference: number = compareTwoDates(
+      new Date(focus1._id),
+      new Date(focus2._id),
+    );
+
+    // if (less than 30 days) -> return all in the correct format
+    // else -> format and sum up all within the same month
+    if (0 < Math.round(difference / 30) && Math.round(difference / 30) <= 12) {
+      console.log(difference / 30);
+      allFocuses = await getGroupedFocusesByMonth();
+    }
+    // more than 12 months difference, show years
+    else if (difference / 30 > 12) {
+      allFocuses = await getGroupedFocusesByYear();
+    }
+    allFocuses.reverse().map((groupedFocuses) => {
+      ret.push({
+        name: groupedFocuses._id,
+        value: Number(
+          convertSecondsToMinutes(
+            getGroupedTotalFocusTime(groupedFocuses.documents),
+          ).toFixed(2),
+        ),
+      });
+    });
+    return ret;
+    // check the first and last focus
   } catch (error) {
     console.error(error);
   }

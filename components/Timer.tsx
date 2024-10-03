@@ -161,7 +161,6 @@ const Timer = ({
     }
   }, [time]);
 
-  // TODO: Task's totalSessions increment when doing a break
   // set color of the circle timer
   const [currentColor, setCurrentColor] = useState("bg-red-100");
 
