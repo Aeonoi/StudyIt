@@ -18,6 +18,7 @@ import {
   updateFocus,
   completeFocusSuperTask,
   completeBreakSuperTask,
+  finishFocus,
 } from "@/lib/mongo-functions";
 import {
   convertMsToMinutes,
@@ -73,18 +74,19 @@ const Timer = ({
 
   useEffect(() => {
     if (!pauseState && time > 0) {
-      const timeDec = 350;
-      const timer = setInterval(async () => {
-        setTime(time - timeDec);
-        setElapsedTime((prev) => prev + timeDec);
-      }, timeDec);
+      // const timeDec = 350;
+      // const timer = setInterval(async () => {
+      //   setTime(time - timeDec);
+      //   setElapsedTime((prev) => prev + timeDec);
+      // }, timeDec);
+      //
+      // return () => clearInterval(timer);
 
-      const dec = 10000000;
+      const dec = 99999;
       const testTimer = setInterval(async () => {
         setTime(time - dec);
         setElapsedTime((prev) => prev + dec);
       }, 350);
-      // return () => clearInterval(timer);
       return () => clearInterval(testTimer);
     }
   }, [pauseState, time]);
@@ -130,6 +132,7 @@ const Timer = ({
           setStarted(false);
           completeTask(currentSelectedTask);
           completeFocusSuperTask();
+          finishFocus(currentFocus);
           break;
         case "BREAK":
           setPauseAction(true);
@@ -150,6 +153,7 @@ const Timer = ({
           completeTask(currentSelectedTask);
           startBreak(currentSelectedTask);
           completeFocusSuperTask();
+          finishFocus(currentFocus);
           break;
         case "MARATHONBREAK":
           setPauseAction(false);
@@ -163,6 +167,8 @@ const Timer = ({
           finishedBreak(true);
           break;
       }
+      // reset focus
+      setCurrentFocus("");
     }
   }, [time]);
 
