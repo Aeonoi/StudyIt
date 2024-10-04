@@ -1,4 +1,6 @@
 // TODO: Marathons should be included for focuses created
+// TODO: use useState to set the different colors for each timer, usefuil for changing theme/colors from settings
+// TODO: surround the timer clock with a progress bar
 // TODO: Play a sound when changing to a different timer
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -14,12 +16,15 @@ import {
   completeBreak,
   updateTask,
   updateFocus,
-  getSupertask,
   completeFocusSuperTask,
   completeBreakSuperTask,
 } from "@/lib/mongo-functions";
-import type { ISuperTask } from "@/models/superTasks";
-import { convertMsToSeconds, debug_print } from "@/lib/useful-functions";
+import {
+  convertMsToMinutes,
+  convertMsToSeconds,
+  debug_print,
+} from "@/lib/useful-functions";
+import { finishedBreak, focusing } from "@/lib/rank";
 
 interface Prop {
   pauseState: boolean;
@@ -41,7 +46,6 @@ const calculateTime = (time: number): string => {
     : `${minutes}:${seconds < 10 ? fixedSeconds : seconds}`;
 };
 
-// TODO: surround the timer clock with a progress bar
 /* Controls the entire card containing the timer and the timer */
 const Timer = ({
   pauseState,
@@ -65,26 +69,23 @@ const Timer = ({
   // stores the total time focused before updating documents
   const [elapsedTime, setElapsedTime] = useState<number>(0);
 
-  const [supertask, setSupertask] = useState<ISuperTask | null>(null);
-
-  useEffect(() => {
-    const fetchSupertask = async () => {
-      const supertask = await getSupertask();
-      setSupertask(supertask);
-    };
-    fetchSupertask();
-  }, []);
-
   // make up for the lost time
-  const timeDec = 350;
 
   useEffect(() => {
     if (!pauseState && time > 0) {
+      const timeDec = 350;
       const timer = setInterval(async () => {
         setTime(time - timeDec);
         setElapsedTime((prev) => prev + timeDec);
       }, timeDec);
-      return () => clearInterval(timer);
+
+      const dec = 10000000;
+      const testTimer = setInterval(async () => {
+        setTime(time - dec);
+        setElapsedTime((prev) => prev + dec);
+      }, 350);
+      // return () => clearInterval(timer);
+      return () => clearInterval(testTimer);
     }
   }, [pauseState, time]);
 
@@ -107,8 +108,10 @@ const Timer = ({
     updateTask(currentSelectedTask, convertMsToSeconds(elapsedTime), timerType);
     updateSuperTask(convertMsToSeconds(elapsedTime), timerType);
     if (timerType === "FOCUS" || timerType === "MARATHON") {
-      debug_print([elapsedTime.toString(), currentFocus]);
+      // debug_print([elapsedTime.toString()]);
       updateFocus(currentFocus, convertMsToSeconds(elapsedTime));
+      // update the rank points
+      focusing(convertMsToMinutes(elapsedTime), timerType === "MARATHON");
     }
     setElapsedTime(0);
   };
@@ -136,6 +139,7 @@ const Timer = ({
           setStarted(false);
           completeBreak(currentSelectedTask);
           completeBreakSuperTask();
+          finishedBreak(false);
           break;
         case "MARATHON":
           setPauseAction(false);
@@ -156,6 +160,7 @@ const Timer = ({
           completeBreak(currentSelectedTask);
           startTask(currentSelectedTask);
           completeBreakSuperTask();
+          finishedBreak(true);
           break;
       }
     }
@@ -181,8 +186,6 @@ const Timer = ({
     setCurrentFocus("");
     setElapsedTime(0);
   };
-
-  // TODO: use useState to set the different colors for each timer, usefuil for changing theme/colors from settings
 
   return (
     <Card className="max-w-md mx-auto my-auto shadow-md overflow-hidden">

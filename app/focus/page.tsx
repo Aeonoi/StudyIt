@@ -4,21 +4,12 @@ import GoogleSearch from "@/components/GoogleSearch";
 import Navbar from "@/components/Navbar";
 import PreventLeave from "@/components/PreventLeave";
 import Timer from "@/components/Timer";
-import {
-  CheckLoginCollection,
-  CheckSuperTaskCollection,
-} from "@/lib/mongo-functions";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type React from "react";
 
 /* The elements of the focus page */
 const FocusPage: React.FC = () => {
   const [pause, setPause] = useState<boolean>(true);
-
-  useEffect(() => {
-    CheckLoginCollection();
-    CheckSuperTaskCollection();
-  }, []);
 
   const [openSettings, setOpenSettings] = useState<boolean>(false);
   const [textareaVisible, setTextareaVisible] = useState<boolean>(false);

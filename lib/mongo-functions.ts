@@ -11,6 +11,8 @@ import mongoose from "mongoose";
 import { compareTwoDates, debug_print } from "./useful-functions";
 import Focuses from "@/models/focuses";
 import type { IFocus } from "@/models/focuses";
+import Rank from "@/models/rank";
+import { brokeStreak } from "./rank";
 
 // TODO: Add field to track marathon and normal focus sessions
 
@@ -352,6 +354,11 @@ export async function CheckLoginCollection() {
     ) {
       return logins[0].consecutiveDays + 1;
     }
+    // broke streak
+    const oldStreak = logins[logins.length - 1].consecutiveDays;
+    if (logins.length > 1 && oldStreak > 1) {
+      brokeStreak(oldStreak);
+    }
     return 1;
   };
 
@@ -408,6 +415,35 @@ export async function CheckSuperTaskCollection() {
       totalBreaks: 0,
       totalFocusTime: 0,
       totalBreakTime: 0,
+    });
+  }
+}
+
+// Checks if the rank collection is created
+export async function CheckRankCollection() {
+  await connectDB();
+  const collections = mongoose.connection.collections;
+
+  let exists = false;
+  for (const collection in collections) {
+    // make sure collection exists
+    if (collection === "ranks") {
+      exists = true;
+      console.log("ranks collection exists");
+      break;
+    }
+    console.log(collection);
+  }
+
+  if (!exists) {
+    // Contains only one document that is used that contains all information
+    await Rank.createCollection();
+  }
+  const ranks = await Rank.find();
+  if (ranks.length === 0) {
+    await Rank.create({
+      rank: "Bronze",
+      points: 0,
     });
   }
 }

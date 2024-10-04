@@ -39,7 +39,7 @@ export function convertSecondsToMinutes(time: number): number {
 }
 
 export function convertMsToMinutes(time: number): number {
-  return (time / 1000) * 60;
+  return time / 60000;
 }
 
 export function convertMsToSeconds(time: number): number {
