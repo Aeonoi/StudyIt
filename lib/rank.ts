@@ -18,7 +18,7 @@ import type { IRank } from "@/models/rank";
 import Rank from "@/models/rank";
 import { CheckRankCollection } from "./mongo-functions";
 import Login, { type ILogin } from "@/models/logins";
-import RankLog, { type IRankLog } from "@/models/ranklog";
+import RankLog from "@/models/ranklog";
 
 // function that determines the number of points to give
 // @param time - The time in minutes
@@ -166,18 +166,6 @@ export async function getRank() {
     CheckRankCollection();
     const rank: IRank = (await Rank.find())[0];
     return JSON.parse(JSON.stringify(rank));
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function getRankImage() {
-  try {
-    await connectDB();
-    // ensure that the rank collection is created
-    CheckRankCollection();
-    const rank: IRank = (await Rank.find())[0];
-    // TODO: Return the image corresponding to the rank
   } catch (error) {
     console.error(error);
   }
