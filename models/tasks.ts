@@ -54,13 +54,13 @@ export const TasksSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
-  // total studying time in seconds
+  // total studying time in minutes
   totalFocusTime: {
     type: Number,
     min: 0,
     required: true,
   },
-  // total break time in seconds
+  // total break time in minutes
   totalBreakTime: {
     type: Number,
     min: 0,

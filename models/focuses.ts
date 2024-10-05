@@ -14,6 +14,7 @@ export const FocusesSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  // time stored in minutes
   time: {
     type: Number,
     required: true,

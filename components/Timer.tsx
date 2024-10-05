@@ -82,7 +82,7 @@ const Timer = ({
       //
       // return () => clearInterval(timer);
 
-      const dec = 99999;
+      const dec = 60000;
       const testTimer = setInterval(async () => {
         setTime(time - dec);
         setElapsedTime((prev) => prev + dec);
@@ -107,11 +107,11 @@ const Timer = ({
   }, [pauseState]);
 
   const update = async () => {
-    updateTask(currentSelectedTask, convertMsToSeconds(elapsedTime), timerType);
-    updateSuperTask(convertMsToSeconds(elapsedTime), timerType);
+    updateTask(currentSelectedTask, convertMsToMinutes(elapsedTime), timerType);
+    updateSuperTask(convertMsToMinutes(elapsedTime), timerType);
     if (timerType === "FOCUS" || timerType === "MARATHON") {
       // debug_print([elapsedTime.toString()]);
-      updateFocus(currentFocus, convertMsToSeconds(elapsedTime));
+      updateFocus(currentFocus, convertMsToMinutes(elapsedTime));
       // update the rank points
       focusing(convertMsToMinutes(elapsedTime), timerType === "MARATHON");
     }

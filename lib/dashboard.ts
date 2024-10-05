@@ -5,11 +5,7 @@ import Login from "@/models/logins";
 import type { ISuperTask } from "@/models/superTasks";
 import type { ILogin } from "@/models/logins";
 import connectDB from "./connect-mongo";
-import {
-  compareTwoDates,
-  convertSecondsToMinutes,
-  getGroupedTotalFocusTime,
-} from "./useful-functions";
+import { compareTwoDates, getGroupedTotalFocusTime } from "./useful-functions";
 import Task from "@/models/tasks";
 import type { ITask } from "@/models/tasks";
 import {
@@ -81,9 +77,7 @@ export async function averageStudyTime(): Promise<number | undefined> {
 
     if (supertask?.completedSessions && supertask.totalFocusTime) {
       return Number(
-        convertSecondsToMinutes(
-          supertask.totalFocusTime / supertask.completedSessions,
-        ).toFixed(2),
+        (supertask.totalFocusTime / supertask.completedSessions).toFixed(2),
       );
     }
     return 0;
@@ -116,7 +110,7 @@ export async function getTotalStudyingTime(): Promise<number | undefined> {
     let total = 0;
     tasks.map((task) => {
       if (task.totalFocusTime) {
-        total += convertSecondsToMinutes(task.totalFocusTime);
+        total += task.totalFocusTime;
       }
     });
     return Number(total.toFixed(2));
@@ -202,9 +196,7 @@ export async function getTotalFocusTime(): Promise<TaskFocus[] | undefined> {
       ret.push({
         name: groupedFocuses._id,
         value: Number(
-          convertSecondsToMinutes(
-            getGroupedTotalFocusTime(groupedFocuses.documents),
-          ).toFixed(2),
+          getGroupedTotalFocusTime(groupedFocuses.documents).toFixed(2),
         ),
       });
     });
