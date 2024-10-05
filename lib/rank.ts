@@ -18,6 +18,7 @@ import type { IRank } from "@/models/rank";
 import Rank from "@/models/rank";
 import { CheckRankCollection } from "./mongo-functions";
 import Login, { type ILogin } from "@/models/logins";
+import RankLog, { type IRankLog } from "@/models/ranklog";
 
 // function that determines the number of points to give
 // @param time - The time in minutes
@@ -97,83 +98,6 @@ function determineLoseStreakPoints(streak: number) {
   return points;
 }
 
-// @returns the Rank object
-export async function getRank() {
-  try {
-    await connectDB();
-    // ensure that the rank collection is created
-    CheckRankCollection();
-    const rank: IRank = (await Rank.find())[0];
-    return rank;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function getRankImage() {
-  try {
-    await connectDB();
-    // ensure that the rank collection is created
-    CheckRankCollection();
-    const rank: IRank = (await Rank.find())[0];
-    // TODO: Return the image corresponding to the rank
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-//////////////////////////
-// Logic                //
-//////////////////////////
-
-// when the user logins, they gain some points (more if consecutive)
-export async function login() {
-  try {
-    await connectDB();
-
-    // ensure that the rank collection is created
-    CheckRankCollection();
-    const rank: IRank = (await Rank.find())[0];
-
-    const today: ILogin = (await Login.find().sort({ loginTime: -1 }))[0];
-
-    const points = determineLoginPoints(today);
-
-    await Rank.findByIdAndUpdate(
-      rank._id,
-      { points: rank.points + points },
-      { new: true },
-    );
-    await checkRankUpdate();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// when the user is focusing, they gain points via the amount they have spent focusing
-// @param time - Time in minutes
-// @param marathon - optional to determine whether focus is via a marathon focus or not
-export async function focusing(time: number, marathon: boolean) {
-  try {
-    await connectDB();
-
-    // ensure that the rank collection is created
-    CheckRankCollection();
-    const rank: IRank = (await Rank.find())[0];
-
-    const points = determineFocusPoints(time, marathon);
-
-    await Rank.findByIdAndUpdate(
-      rank._id,
-      { points: rank.points + points },
-      { new: true },
-    );
-    await checkRankUpdate();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 async function checkRankUpdate() {
   try {
     await connectDB();
@@ -234,6 +158,93 @@ async function checkRankUpdate() {
   }
 }
 
+// @returns the Rank object
+export async function getRank() {
+  try {
+    await connectDB();
+    // ensure that the rank collection is created
+    CheckRankCollection();
+    const rank: IRank = (await Rank.find())[0];
+    return rank;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getRankImage() {
+  try {
+    await connectDB();
+    // ensure that the rank collection is created
+    CheckRankCollection();
+    const rank: IRank = (await Rank.find())[0];
+    // TODO: Return the image corresponding to the rank
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+//////////////////////////
+// Logic                //
+//////////////////////////
+
+// when the user logins, they gain some points (more if consecutive)
+export async function login() {
+  try {
+    await connectDB();
+
+    // ensure that the rank collection is created
+    CheckRankCollection();
+    const rank: IRank = (await Rank.find())[0];
+
+    const today: ILogin = (await Login.find().sort({ loginTime: -1 }))[0];
+
+    const points = determineLoginPoints(today);
+
+    await Rank.findByIdAndUpdate(
+      rank._id,
+      { points: rank.points + points },
+      { new: true },
+    );
+    await RankLog.create({
+      points: points,
+      time: new Date(),
+      description: "login",
+    });
+    await checkRankUpdate();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// when the user is focusing, they gain points via the amount they have spent focusing
+// @param time - Time in minutes
+// @param marathon - optional to determine whether focus is via a marathon focus or not
+export async function focusing(time: number, marathon: boolean) {
+  try {
+    await connectDB();
+
+    // ensure that the rank collection is created
+    CheckRankCollection();
+    const rank: IRank = (await Rank.find())[0];
+
+    const points = determineFocusPoints(time, marathon);
+
+    await Rank.findByIdAndUpdate(
+      rank._id,
+      { points: rank.points + points },
+      { new: true },
+    );
+    await RankLog.create({
+      points: points,
+      time: new Date(),
+      description: "focusing",
+    });
+    await checkRankUpdate();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function finishedBreak(marathon: boolean) {
   // TODO: Award points for also completing breaks
   try {
@@ -249,6 +260,13 @@ export async function finishedBreak(marathon: boolean) {
       { points: rank.points + points },
       { new: true },
     );
+    await RankLog.create({
+      points: points,
+      time: new Date(),
+      description: "completing break",
+    });
+
+    await checkRankUpdate();
   } catch (error) {
     console.error(error);
   }
@@ -266,5 +284,10 @@ export async function brokeStreak(streak: number) {
       { points: rank.points - points },
       { new: true },
     );
+    await RankLog.create({
+      points: -points,
+      time: new Date(),
+      description: "broke login streak",
+    });
   } catch (error) { }
 }

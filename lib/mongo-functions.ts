@@ -8,11 +8,12 @@ import type { ISuperTask } from "@/models/superTasks";
 import Login from "@/models/logins";
 import type { ILogin } from "@/models/logins";
 import mongoose from "mongoose";
-import { compareTwoDates, debug_print } from "./useful-functions";
+import { compareTwoDates } from "./useful-functions";
 import Focuses from "@/models/focuses";
 import type { IFocus } from "@/models/focuses";
 import Rank from "@/models/rank";
 import { brokeStreak } from "./rank";
+import RankLog, { type IRankLog } from "@/models/ranklog";
 
 // TODO: Add field to track marathon and normal focus sessions
 
@@ -424,20 +425,27 @@ export async function CheckRankCollection() {
   await connectDB();
   const collections = mongoose.connection.collections;
 
-  let exists = false;
+  let rank_exists = false;
+  let log_exists = false;
   for (const collection in collections) {
     // make sure collection exists
     if (collection === "ranks") {
-      exists = true;
+      rank_exists = true;
       console.log("ranks collection exists");
-      break;
+    }
+    if (collection === "ranklogs") {
+      log_exists = true;
+      console.log("rank logs collection exists");
     }
     console.log(collection);
   }
 
-  if (!exists) {
+  if (!rank_exists) {
     // Contains only one document that is used that contains all information
     await Rank.createCollection();
+  }
+  if (!log_exists) {
+    await RankLog.createCollection();
   }
   const ranks = await Rank.find();
   if (ranks.length === 0) {
@@ -528,4 +536,14 @@ export async function getGroupedFocusesByYear() {
   ]);
 
   return focuses;
+}
+
+export async function getRankLogs(): Promise<IRankLog[] | undefined> {
+  try {
+    await connectDB();
+
+    return JSON.parse(JSON.stringify(await RankLog.find().sort({ time: -1 })));
+  } catch (error) {
+    console.error(error);
+  }
 }
