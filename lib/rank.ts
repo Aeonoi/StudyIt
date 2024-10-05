@@ -165,7 +165,7 @@ export async function getRank() {
     // ensure that the rank collection is created
     CheckRankCollection();
     const rank: IRank = (await Rank.find())[0];
-    return rank;
+    return JSON.parse(JSON.stringify(rank));
   } catch (error) {
     console.error(error);
   }

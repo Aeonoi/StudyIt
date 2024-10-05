@@ -41,3 +41,6 @@ extra.txt
 # test playground
 test.ts
 test.js
+
+# icon folder
+public/PineTools.com_files/*
