@@ -35,7 +35,9 @@ const RankLogsHistory = () => {
           <li key={log._id}>
             <div className="grid grid-cols-12">
               <h3 className="text-lg font-medium text-gray-900 col-span-10">
-                {log.points < 0 ? `${log.points}` : `+${log.points}`}
+                {log.points < 0
+                  ? `${(log.points).toFixed(0)}`
+                  : `+${(log.points).toFixed(0)}`}
               </h3>
               <p>{log.description}</p>
             </div>
