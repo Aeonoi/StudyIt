@@ -1,3 +1,4 @@
+// TODO: Separate the different logs based on how the points were gathered (different colors for each type)
 import { getRankLogs } from "@/lib/mongo-functions";
 import type { IRankLog } from "@/models/ranklog";
 import { useEffect, useState } from "react";

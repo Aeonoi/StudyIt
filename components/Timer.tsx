@@ -120,7 +120,7 @@ const Timer = ({
       // timer finished
       update();
       switch (timerType) {
-        case "FOCUS":
+        case "FOCUS": {
           setPauseAction(true);
           setTime(breakTime);
           setTimerType("BREAK");
@@ -129,8 +129,11 @@ const Timer = ({
           completeTask(currentSelectedTask);
           completeFocusSuperTask();
           finishFocus(currentFocus);
+          const audio = new Audio("/sounds/hotel-bell-ding-1-174457.mp3");
+          audio.play();
           break;
-        case "BREAK":
+        }
+        case "BREAK": {
           setPauseAction(true);
           setTime(focusTime);
           setTimerType("FOCUS");
@@ -139,8 +142,11 @@ const Timer = ({
           completeBreak(currentSelectedTask);
           completeBreakSuperTask();
           finishedBreak(false);
+          const audio = new Audio("/sounds/hotel-bell-ding-5-202589.mp3");
+          audio.play();
           break;
-        case "MARATHON":
+        }
+        case "MARATHON": {
           setPauseAction(false);
           setTime(marathonBreakTime);
           setTimerType("MARATHONBREAK");
@@ -149,9 +155,12 @@ const Timer = ({
           completeTask(currentSelectedTask);
           startBreak(currentSelectedTask);
           completeFocusSuperTask();
+          const audio = new Audio("/sounds/microwave-timer-117077.mp3");
+          audio.play();
           finishFocus(currentFocus);
           break;
-        case "MARATHONBREAK":
+        }
+        case "MARATHONBREAK": {
           setPauseAction(false);
           setTime(marathonTime);
           setTimerType("MARATHON");
@@ -162,7 +171,10 @@ const Timer = ({
           completeBreakSuperTask();
           finishedBreak(true);
           setCurrentFocus(await createFocus(currentSelectedTask));
+          const audio = new Audio("/sounds/hotel-bell-ding-5-202589.mp3");
+          audio.play();
           break;
+        }
       }
     };
     if (time <= 0) {
