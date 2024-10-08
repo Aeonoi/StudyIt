@@ -6,8 +6,8 @@ export interface ITodo extends Document {
   name: string;
   createdDate: Date;
   dueDate: Date;
-  priority: number;
-  content: string;
+  priority: string;
+  description: string;
 }
 
 export const TodoSchema = new mongoose.Schema({
@@ -22,9 +22,9 @@ export const TodoSchema = new mongoose.Schema({
     type: Date,
   },
   priority: {
-    type: Number,
+    type: String,
   },
-  content: {
+  description: {
     type: String,
   },
 });

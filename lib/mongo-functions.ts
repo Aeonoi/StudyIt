@@ -14,6 +14,7 @@ import type { IFocus } from "@/models/focuses";
 import Rank from "@/models/rank";
 import { brokeStreak, login } from "./rank";
 import RankLog, { type IRankLog } from "@/models/ranklog";
+import Todo from "@/models/todo";
 
 // TODO: Add field to track marathon and normal focus sessions
 
@@ -543,6 +544,32 @@ export async function getRankLogs(): Promise<IRankLog[] | undefined> {
   try {
     await connectDB();
     return JSON.parse(JSON.stringify(await RankLog.find().sort({ time: -1 })));
+  } catch (error) {
+    console.error(error);
+  }
+}
+//   title: values.title,
+//   createdDate: new Date(),
+//   dueDate: new Date(values.date),
+//   priority: values.priority,
+//   description: values.description,
+
+export async function createTodo(
+  title: string,
+  dueDate: string,
+  priority: string,
+  description: string,
+) {
+  try {
+    await connectDB();
+    await Todo.create({
+      name: title,
+      createdDate: new Date(),
+      dueDate: new Date(dueDate),
+      priority: priority,
+      description: description,
+    });
+    console.log("success");
   } catch (error) {
     console.error(error);
   }

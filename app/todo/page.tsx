@@ -1,4 +1,15 @@
+import CreateTodo from "@/components/CreateToDo";
+import Navbar from "@/components/Navbar";
+
 const TodoPage: React.FC = () => {
-  return <div>This is the todo page</div>;
+  return (
+    <>
+      <Navbar />
+      <div className="m-10">
+        <CreateTodo />
+      </div>
+      {/* Show all todos */}
+    </>
+  );
 };
 export default TodoPage;
