@@ -1,4 +1,4 @@
-## Goals (May change):
+## Goals/Milestones :
 
 ### Dashboard: 
 
@@ -38,12 +38,6 @@
 * [ ] Store to-dos
 * [ ] Set deadlines (link with a calendar)
 * [ ] Notify upcoming deadlines (alerts on page open)
-
-### Music (Future update):
-
-* [ ] When going out of the route (/video), play the video in a mini player
-* [ ] Be allowed to select the different type of videos that the user wants to listen to when using the play video feature
-* [ ] Embed a random video given the user's interest or a random one  
 
 ### Music:
 * [x] Play music audio 
