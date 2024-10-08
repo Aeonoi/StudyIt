@@ -159,6 +159,20 @@ async function checkRankUpdate() {
   }
 }
 
+async function updateRank(points: number, desc: string) {
+  const rank: IRank = (await Rank.find())[0];
+  await RankLog.create({
+    points: points,
+    time: new Date(),
+    description: desc,
+  });
+  await Rank.findByIdAndUpdate(
+    rank._id,
+    { points: rank.points + points },
+    { new: true },
+  );
+}
+
 // @returns the Rank object
 export async function getRank() {
   try {
@@ -183,20 +197,8 @@ export async function login(consecutive_days: number) {
 
     // ensure that the rank collection is created
     CheckRankCollection();
-    const rank: IRank = (await Rank.find())[0];
-
     const points = determineLoginPoints(consecutive_days);
-
-    await RankLog.create({
-      points: points,
-      time: new Date(),
-      description: "login",
-    });
-    await Rank.findByIdAndUpdate(
-      rank._id,
-      { points: rank.points + points },
-      { new: true },
-    );
+    updateRank(points, "login");
     await checkRankUpdate();
   } catch (error) {
     console.error(error);
@@ -212,20 +214,8 @@ export async function focusing(time: number, marathon: boolean) {
 
     // ensure that the rank collection is created
     CheckRankCollection();
-    const rank: IRank = (await Rank.find())[0];
-
     const points = determineFocusPoints(time, marathon);
-
-    await Rank.findByIdAndUpdate(
-      rank._id,
-      { points: rank.points + points },
-      { new: true },
-    );
-    await RankLog.create({
-      points: points,
-      time: new Date(),
-      description: "focusing",
-    });
+    updateRank(points, "focusing");
     await checkRankUpdate();
   } catch (error) {
     console.error(error);
@@ -236,22 +226,11 @@ export async function finishedBreak(marathon: boolean) {
   // TODO: Award points for also completing breaks
   try {
     await connectDB();
-
-    const rank: IRank = (await Rank.find())[0];
     let points = 150;
     if (marathon) {
       points = 200;
     }
-    await Rank.findByIdAndUpdate(
-      rank._id,
-      { points: rank.points + points },
-      { new: true },
-    );
-    await RankLog.create({
-      points: points,
-      time: new Date(),
-      description: "completing break",
-    });
+    updateRank(points, "completing break");
 
     await checkRankUpdate();
   } catch (error) {
@@ -263,18 +242,15 @@ export async function brokeStreak(streak: number) {
   try {
     await connectDB();
 
-    const rank: IRank = (await Rank.find())[0];
     const points = determineLoseStreakPoints(streak);
-
-    await Rank.findByIdAndUpdate(
-      rank._id,
-      { points: rank.points - points },
-      { new: true },
-    );
-    await RankLog.create({
-      points: -points,
-      time: new Date(),
-      description: "broke login streak",
-    });
+    updateRank(-points, "broke login streak");
   } catch (error) { }
+}
+
+export async function notFinish() {
+  try {
+    await connectDB();
+  } catch (error) {
+    console.error(error);
+  }
 }
