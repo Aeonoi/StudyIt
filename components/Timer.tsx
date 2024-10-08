@@ -76,7 +76,7 @@ const Timer = ({
       //
       // return () => clearInterval(timer);
 
-      const dec = 60000;
+      const dec = 900000;
       const testTimer = setInterval(async () => {
         setTime(time - dec);
         setElapsedTime((prev) => prev + dec);
@@ -114,8 +114,10 @@ const Timer = ({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only thing that matters is the time to check for auto start
   useEffect(() => {
-    // timer finished
-    if (time <= 0) {
+    const check = async () => {
+      // reset focus
+      setCurrentFocus("");
+      // timer finished
       update();
       switch (timerType) {
         case "FOCUS":
@@ -159,10 +161,12 @@ const Timer = ({
           startTask(currentSelectedTask);
           completeBreakSuperTask();
           finishedBreak(true);
+          setCurrentFocus(await createFocus(currentSelectedTask));
           break;
       }
-      // reset focus
-      setCurrentFocus("");
+    };
+    if (time <= 0) {
+      check();
     }
   }, [time]);
 
@@ -245,7 +249,6 @@ const Timer = ({
               (timerType === "FOCUS" || timerType === "MARATHON")
             ) {
               setCurrentFocus(await createFocus(currentSelectedTask));
-              console.log("creating focus here...");
             }
           }}
         >
