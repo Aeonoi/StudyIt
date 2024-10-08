@@ -1,6 +1,4 @@
-// TODO: Marathons should be included for focuses created
 // TODO: use useState to set the different colors for each timer, usefuil for changing theme/colors from settings
-// TODO: surround the timer clock with a progress bar
 // TODO: Play a sound when changing to a different timer
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -20,11 +18,7 @@ import {
   completeBreakSuperTask,
   finishFocus,
 } from "@/lib/mongo-functions";
-import {
-  convertMsToMinutes,
-  convertMsToSeconds,
-  debug_print,
-} from "@/lib/useful-functions";
+import { convertMsToMinutes } from "@/lib/useful-functions";
 import { finishedBreak, focusing } from "@/lib/rank";
 
 interface Prop {
@@ -247,10 +241,11 @@ const Timer = ({
               startBreak(currentSelectedTask);
             }
             if (
-              (currentFocus === "" && timerType === "FOCUS") ||
-              timerType === "MARATHON"
+              currentFocus === "" &&
+              (timerType === "FOCUS" || timerType === "MARATHON")
             ) {
               setCurrentFocus(await createFocus(currentSelectedTask));
+              console.log("creating focus here...");
             }
           }}
         >
