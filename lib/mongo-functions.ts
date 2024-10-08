@@ -12,7 +12,7 @@ import { compareTwoDates } from "./useful-functions";
 import Focuses from "@/models/focuses";
 import type { IFocus } from "@/models/focuses";
 import Rank from "@/models/rank";
-import { brokeStreak } from "./rank";
+import { brokeStreak, login } from "./rank";
 import RankLog, { type IRankLog } from "@/models/ranklog";
 
 // TODO: Add field to track marathon and normal focus sessions
@@ -382,6 +382,7 @@ export async function CheckLoginCollection() {
       loginTime: new Date(),
       consecutiveDays: days,
     });
+    await login(days);
   }
 }
 
@@ -541,7 +542,6 @@ export async function getGroupedFocusesByYear() {
 export async function getRankLogs(): Promise<IRankLog[] | undefined> {
   try {
     await connectDB();
-
     return JSON.parse(JSON.stringify(await RankLog.find().sort({ time: -1 })));
   } catch (error) {
     console.error(error);

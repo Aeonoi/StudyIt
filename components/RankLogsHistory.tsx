@@ -4,15 +4,16 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { IRank } from "@/models/rank";
 import { getRank } from "@/lib/rank";
+import { Card } from "./ui/card";
 
-const RankLogsHistroy = () => {
+const RankLogsHistory = () => {
   const [rankLogs, setRankLogs] = useState<IRankLog[] | undefined>(undefined);
   const [rank, setRank] = useState<IRank | undefined>(undefined);
 
   useEffect(() => {
     const fetchRank = async () => {
-      setRankLogs(await getRankLogs());
       setRank(await getRank());
+      setRankLogs(await getRankLogs());
     };
     fetchRank();
   }, []);
@@ -27,6 +28,7 @@ const RankLogsHistroy = () => {
           height={100}
           alt="masters"
         />
+        <Card className="p-3">Points: {rank?.points.toFixed(0)}</Card>
       </div>
       <ul className="grid gap-4 shadow overflow-hidden sm:rounded-md">
         {rankLogs?.map((log) => (
@@ -44,4 +46,4 @@ const RankLogsHistroy = () => {
   );
 };
 
-export default RankLogsHistroy;
+export default RankLogsHistory;

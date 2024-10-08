@@ -4,7 +4,6 @@ import {
   CheckRankCollection,
   CheckSuperTaskCollection,
 } from "@/lib/mongo-functions";
-import { login } from "@/lib/rank";
 import { useEffect } from "react";
 
 interface Props {
@@ -16,10 +15,8 @@ export default function ClientWrapper({ children }: Props) {
   useEffect(() => {
     const checkCollections = async () => {
       await CheckSuperTaskCollection();
-      await CheckLoginCollection();
       await CheckRankCollection();
-      // give points for logging in
-      await login();
+      await CheckLoginCollection();
     };
     checkCollections();
   }, []);

@@ -19,6 +19,7 @@ import Rank from "@/models/rank";
 import { CheckRankCollection } from "./mongo-functions";
 import Login, { type ILogin } from "@/models/logins";
 import RankLog from "@/models/ranklog";
+import { compareTwoDates } from "./useful-functions";
 
 // function that determines the number of points to give
 // @param time - The time in minutes
@@ -54,28 +55,28 @@ function determineFocusPoints(time: number, marathon: boolean) {
   return 5 * time;
 }
 
-function determineLoginPoints(today: ILogin) {
+function determineLoginPoints(conseuctive_days: number) {
   let points = 100;
   // is on a login streak
-  if (today.consecutiveDays > 1) {
+  if (conseuctive_days > 1) {
     // a week
-    if (today.consecutiveDays > 7) {
+    if (conseuctive_days > 7) {
       points = 125;
     }
     // more than a month
-    else if (today.consecutiveDays > 30) {
+    else if (conseuctive_days > 30) {
       points = 150;
     }
     // more than 3 months
-    else if (today.consecutiveDays > 90) {
+    else if (conseuctive_days > 90) {
       points = 175;
     }
     // more than 6 months
-    else if (today.consecutiveDays > 180) {
+    else if (conseuctive_days > 180) {
       points = 200;
     }
     // more than a year
-    else if (today.consecutiveDays > 365) {
+    else if (conseuctive_days > 365) {
       points = 250;
     }
   }
@@ -176,7 +177,7 @@ export async function getRank() {
 //////////////////////////
 
 // when the user logins, they gain some points (more if consecutive)
-export async function login() {
+export async function login(consecutive_days: number) {
   try {
     await connectDB();
 
@@ -184,20 +185,18 @@ export async function login() {
     CheckRankCollection();
     const rank: IRank = (await Rank.find())[0];
 
-    const today: ILogin = (await Login.find().sort({ loginTime: -1 }))[0];
+    const points = determineLoginPoints(consecutive_days);
 
-    const points = determineLoginPoints(today);
-
-    await Rank.findByIdAndUpdate(
-      rank._id,
-      { points: rank.points + points },
-      { new: true },
-    );
     await RankLog.create({
       points: points,
       time: new Date(),
       description: "login",
     });
+    await Rank.findByIdAndUpdate(
+      rank._id,
+      { points: rank.points + points },
+      { new: true },
+    );
     await checkRankUpdate();
   } catch (error) {
     console.error(error);
