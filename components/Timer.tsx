@@ -1,5 +1,4 @@
 // TODO: use useState to set the different colors for each timer, usefuil for changing theme/colors from settings
-// TODO: Play a sound when changing to a different timer
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useEffect, useState } from "react";

@@ -33,10 +33,16 @@ const formSchema = z.object({
 const priorities = ["low", "medium", "high"];
 
 const CreateTodo = () => {
-  // const { toast } = useToast();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      date: "",
+      priority: "",
+      description: "",
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -48,24 +54,22 @@ const CreateTodo = () => {
         values.priority,
         values.description,
       );
-      // FIX: toast does not seem to work/show up
-      //
-      // toast({
-      //   title: "hello",
-      //   description: (
-      //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-      //       <code className="text-white">
-      //         {JSON.stringify(values, null, 2)}
-      //       </code>
-      //     </pre>
-      //   ),
-      // });
+      toast({
+        title: "Successfully created todo",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(values, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     } catch (error) {
       console.error("Form submission error", error);
-      // toast({
-      //   title: "error",
-      //   description: "Failed to submit the form. Please try again.",
-      // });
+      toast({
+        title: "Error creating todo",
+        description: "Failed to submit the form. Please try again.",
+      });
     }
   };
 
