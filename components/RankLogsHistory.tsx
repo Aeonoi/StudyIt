@@ -41,6 +41,7 @@ const RankLogsHistory = () => {
                   : `+${(log.points).toFixed(0)}`}
               </h3>
               <p>{log.description}</p>
+              {/* TODO: display time */}
             </div>
           </li>
         ))}

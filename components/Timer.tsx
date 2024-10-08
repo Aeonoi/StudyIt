@@ -19,7 +19,7 @@ import {
   finishFocus,
 } from "@/lib/mongo-functions";
 import { convertMsToMinutes } from "@/lib/useful-functions";
-import { finishedBreak, focusing } from "@/lib/rank";
+import { finishedBreak, focusing, notFinish } from "@/lib/rank";
 
 interface Prop {
   pauseState: boolean;
@@ -203,6 +203,22 @@ const Timer = ({
     setElapsedTime(0);
   };
 
+  // get the remaining time
+  const getRemainingTime = (): number => {
+    switch (timerType.toLowerCase()) {
+      case "focus":
+        return focusTime - time;
+      case "break":
+        return breakTime - time;
+      case "marathon":
+        return marathonTime - time;
+      case "marathonbreak":
+        return marathonBreakTime - time;
+      default:
+        return 0;
+    }
+  };
+
   return (
     <Card className="max-w-md mx-auto my-auto shadow-md overflow-hidden">
       <CardHeader className="grid grid-rows-2 items-center justify-center">
@@ -215,6 +231,9 @@ const Timer = ({
         <div className="grid grid-cols-3 gap-3 items-center justify-center">
           <Button
             onClick={() => {
+              if (started) {
+                notFinish(getRemainingTime(), timerType);
+              }
               setTime(focusTime);
               setCurrentColor("bg-red-100");
               setTimerType("FOCUS");
@@ -225,6 +244,9 @@ const Timer = ({
           </Button>
           <Button
             onClick={() => {
+              if (started) {
+                notFinish(getRemainingTime(), timerType);
+              }
               setTime(marathonTime);
               setCurrentColor("bg-orange-300");
               setTimerType("MARATHON");
@@ -235,6 +257,9 @@ const Timer = ({
           </Button>
           <Button
             onClick={() => {
+              if (started) {
+                notFinish(getRemainingTime(), timerType);
+              }
               setTime(breakTime);
               setCurrentColor("bg-blue-500");
               setTimerType("BREAK");

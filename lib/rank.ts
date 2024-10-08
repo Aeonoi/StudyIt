@@ -20,6 +20,7 @@ import { CheckRankCollection } from "./mongo-functions";
 import Login, { type ILogin } from "@/models/logins";
 import RankLog from "@/models/ranklog";
 import { compareTwoDates } from "./useful-functions";
+import { RemoveFormattingIcon } from "lucide-react";
 
 // function that determines the number of points to give
 // @param time - The time in minutes
@@ -173,6 +174,50 @@ async function updateRank(points: number, desc: string) {
   );
 }
 
+function determineLosePointsNotFocus(remaining: number, type: string) {
+  // lose more points for not completing focuses in case user decides to not take break and finish focusing
+  let points = 100;
+  switch (type.toLowerCase()) {
+    case "focus":
+    case "marathon":
+      switch (true) {
+        case 0 === remaining:
+          return 0;
+        case 0 < remaining && remaining <= 15:
+          points = 1.5 * points;
+          break;
+        case 15 < remaining && remaining <= 30:
+          points = 2.0 * points;
+          break;
+        case 30 < remaining && remaining <= 45:
+          points = 2.5 * points;
+          break;
+        case 45 > remaining:
+          points = 3.0 * points;
+          break;
+      }
+      break;
+    case "break":
+    case "marathonbreak":
+      switch (true) {
+        case 0 < remaining && remaining <= 15:
+          points = 0.5 * points;
+          break;
+        case 15 < remaining && remaining <= 30:
+          points = 1.0 * points;
+          break;
+        case 30 < remaining && remaining <= 45:
+          points = 1.5 * points;
+          break;
+        case 45 > remaining:
+          points = 2.0 * points;
+          break;
+      }
+      break;
+  }
+  return points;
+}
+
 // @returns the Rank object
 export async function getRank() {
   try {
@@ -244,12 +289,20 @@ export async function brokeStreak(streak: number) {
 
     const points = determineLoseStreakPoints(streak);
     updateRank(-points, "broke login streak");
-  } catch (error) { }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-export async function notFinish() {
+// @param remaining - The remaining time
+// @param type - The timer type that is currently unfinished
+export async function notFinish(remaining: number, type: string) {
   try {
     await connectDB();
+    const points = determineLosePointsNotFocus(remaining, type);
+    if (points !== 0) {
+      updateRank(-points, `not finished with ${type}`);
+    }
   } catch (error) {
     console.error(error);
   }
