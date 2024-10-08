@@ -301,8 +301,17 @@ export async function notFinish(remaining: number, type: string) {
     await connectDB();
     const points = determineLosePointsNotFocus(remaining, type);
     if (points !== 0) {
-      updateRank(-points, `not finished with ${type}`);
+      updateRank(-points, `not finished with ${type.toLowerCase()}`);
     }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function pausedFocus() {
+  try {
+    await connectDB();
+    updateRank(-100, "paused focus");
   } catch (error) {
     console.error(error);
   }

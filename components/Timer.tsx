@@ -19,7 +19,7 @@ import {
   finishFocus,
 } from "@/lib/mongo-functions";
 import { convertMsToMinutes } from "@/lib/useful-functions";
-import { finishedBreak, focusing, notFinish } from "@/lib/rank";
+import { finishedBreak, focusing, notFinish, pausedFocus } from "@/lib/rank";
 
 interface Prop {
   pauseState: boolean;
@@ -64,6 +64,8 @@ const Timer = ({
   // stores the total time focused before updating documents
   const [elapsedTime, setElapsedTime] = useState<number>(0);
 
+  const [numberOfPauses, setNumberOfPauses] = useState<number>(0);
+
   // make up for the lost time
 
   useEffect(() => {
@@ -76,7 +78,7 @@ const Timer = ({
       //
       // return () => clearInterval(timer);
 
-      const dec = 900000;
+      const dec = 100000;
       const testTimer = setInterval(async () => {
         setTime(time - dec);
         setElapsedTime((prev) => prev + dec);
@@ -176,6 +178,7 @@ const Timer = ({
           break;
         }
       }
+      setNumberOfPauses(0);
     };
     if (time <= 0) {
       check();
@@ -201,6 +204,10 @@ const Timer = ({
     setStarted(false);
     setCurrentFocus("");
     setElapsedTime(0);
+    setNumberOfPauses(0);
+    if (started) {
+      notFinish(getRemainingTime(), timerType);
+    }
   };
 
   // get the remaining time
@@ -231,9 +238,6 @@ const Timer = ({
         <div className="grid grid-cols-3 gap-3 items-center justify-center">
           <Button
             onClick={() => {
-              if (started) {
-                notFinish(getRemainingTime(), timerType);
-              }
               setTime(focusTime);
               setCurrentColor("bg-red-100");
               setTimerType("FOCUS");
@@ -244,9 +248,6 @@ const Timer = ({
           </Button>
           <Button
             onClick={() => {
-              if (started) {
-                notFinish(getRemainingTime(), timerType);
-              }
               setTime(marathonTime);
               setCurrentColor("bg-orange-300");
               setTimerType("MARATHON");
@@ -257,9 +258,6 @@ const Timer = ({
           </Button>
           <Button
             onClick={() => {
-              if (started) {
-                notFinish(getRemainingTime(), timerType);
-              }
               setTime(breakTime);
               setCurrentColor("bg-blue-500");
               setTimerType("BREAK");
@@ -286,6 +284,12 @@ const Timer = ({
               (timerType === "FOCUS" || timerType === "MARATHON")
             ) {
               setCurrentFocus(await createFocus(currentSelectedTask));
+            }
+            if (started && pauseState) {
+              if (numberOfPauses >= 3) {
+                pausedFocus();
+              }
+              setNumberOfPauses((prev) => prev + 1);
             }
           }}
         >
