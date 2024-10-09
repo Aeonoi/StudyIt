@@ -556,11 +556,6 @@ export async function getRankLogs(): Promise<IRankLog[] | undefined> {
     console.error(error);
   }
 }
-//   title: values.title,
-//   createdDate: new Date(),
-//   dueDate: new Date(values.date),
-//   priority: values.priority,
-//   description: values.description,
 
 export async function createTodo(
   title: string,
