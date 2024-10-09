@@ -23,7 +23,7 @@ const RankLogsHistory = () => {
     <>
       <div className="flex items-center justify-center">
         <Image
-          src={`/${rank?.rank.toLowerCase()}.png`}
+          src={`/ranks/${rank?.rank.toLowerCase()}.png`}
           aria-label={`${rank?.rank}`}
           width={100}
           height={100}
