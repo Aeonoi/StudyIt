@@ -50,6 +50,10 @@ export function exportISOString(date: Date): string {
   return `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()}`;
 }
 
+export function convertMinutesToHours(time: number) {
+  return time / 60;
+}
+
 export function getGroupedTotalFocusTime(arr: IFocus[]) {
   let ret = 0;
   arr.map((focus) => {

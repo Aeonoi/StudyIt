@@ -29,7 +29,9 @@ export async function getAllTasks() {
   }
 }
 
-// @param id - The id of the task that it is associated with (optional)
+/**
+ * @param id - The id of the task that it is associated with (optional)
+ */
 export async function createFocus(id = "") {
   try {
     await connectDB();
@@ -489,7 +491,9 @@ export interface GroupedFocuses {
   documents: IFocus[];
 }
 
-// @returns An array of JSON objects with _id being the date sorted by days
+/**
+ * @returns An array of JSON objects with _id being the date sorted by days
+ */
 export async function getGroupedFocusesByDay() {
   const focuses: GroupedFocuses[] = await Focuses.aggregate([
     {
@@ -506,7 +510,9 @@ export async function getGroupedFocusesByDay() {
   return focuses;
 }
 
-// @returns An array of JSON objects with _id being the date sorted by months
+/**
+ * @returns An array of JSON objects with _id being the date sorted by months
+ */
 export async function getGroupedFocusesByMonth() {
   const focuses: GroupedFocuses[] = await Focuses.aggregate([
     {
@@ -523,7 +529,9 @@ export async function getGroupedFocusesByMonth() {
   return focuses;
 }
 
-// @returns An array of JSON objects with _id being the date sorted by year
+/**
+ * @returns An array of JSON objects with _id being the date sorted by year
+ */
 export async function getGroupedFocusesByYear() {
   const focuses: GroupedFocuses[] = await Focuses.aggregate([
     {

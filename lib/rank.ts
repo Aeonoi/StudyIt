@@ -22,8 +22,10 @@ import RankLog from "@/models/ranklog";
 import { compareTwoDates } from "./useful-functions";
 import { RemoveFormattingIcon } from "lucide-react";
 
-// function that determines the number of points to give
-// @param time - The time in minutes
+/**
+ * function that determines the number of points to give
+ * @param time - The time in minutes
+ */
 function determineFocusPoints(time: number, marathon: boolean) {
   if (time < 0) {
     console.error("Time focused is negative");
@@ -218,7 +220,9 @@ function determineLosePointsNotFocus(remaining: number, type: string) {
   return points;
 }
 
-// @returns the Rank object
+/**
+ * @returns the Rank object
+ */
 export async function getRank() {
   try {
     await connectDB();
@@ -250,9 +254,11 @@ export async function login(consecutive_days: number) {
   }
 }
 
-// when the user is focusing, they gain points via the amount they have spent focusing
-// @param time - Time in minutes
-// @param marathon - optional to determine whether focus is via a marathon focus or not
+/**
+ * when the user is focusing, they gain points via the amount they have spent focusing
+ * @param time - Time in minutes
+ * @param marathon - optional to determine whether focus is via a marathon focus or not
+ */
 export async function focusing(time: number, marathon: boolean) {
   try {
     await connectDB();
@@ -294,8 +300,10 @@ export async function brokeStreak(streak: number) {
   }
 }
 
-// @param remaining - The remaining time
-// @param type - The timer type that is currently unfinished
+/**
+ * @param remaining - The remaining time
+ * @param type - The timer type that is currently unfinished
+ */
 export async function notFinish(remaining: number, type: string) {
   try {
     await connectDB();

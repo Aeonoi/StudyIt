@@ -42,8 +42,10 @@ interface YoutubeAPITypes {
   };
 }
 
-// DOCS: https://developers.google.com/youtube/v3/docs/search/list#go
-// @return: array of youtube url
+/**
+ * DOCS: https://developers.google.com/youtube/v3/docs/search/list#go
+ * @return: array of youtube url
+ */
 export async function fetchVideos(query: string) {
   QUERY = query;
   const url = `${URL_API}?key=${KEY}&q=${QUERY}&type=${TYPE}&${PART}&maxResults=${MAX_RESULTS}`;

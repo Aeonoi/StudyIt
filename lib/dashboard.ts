@@ -68,7 +68,9 @@ export async function getLoginStreak(): Promise<number | undefined> {
   }
 }
 
-// @returns Average studying time in minutes
+/**
+ * @returns Average studying time in minutes
+ */
 export async function averageStudyTime(): Promise<number | undefined> {
   try {
     await connectDB();
@@ -105,15 +107,8 @@ export async function getTotalStudyingTime(): Promise<number | undefined> {
   try {
     await connectDB();
 
-    const tasks: ITask[] = await Task.find();
-
-    let total = 0;
-    tasks.map((task) => {
-      if (task.totalFocusTime) {
-        total += task.totalFocusTime;
-      }
-    });
-    return Number(total.toFixed(2));
+    const supertask: ISuperTask = (await SuperTask.find())[0];
+    return Number(supertask.totalFocusTime.toFixed(2));
   } catch (error) {
     console.error(error);
   }
@@ -123,7 +118,9 @@ export async function getTotalStudyingTime(): Promise<number | undefined> {
 // Chart                                                            //
 //////////////////////////////////////////////////////////////////////
 
-// @returns All tasks with their name and their total focus time
+/**
+ * @returns All tasks with their name and their total focus time
+ */
 export async function getAllTasks(): Promise<TaskFocus[] | undefined> {
   try {
     await connectDB();
