@@ -44,17 +44,6 @@ export async function getCalendarEvents() {
 }
 
 /**
- * Removes any todos that have passed their deadlines (more than 3 days)
- */
-export async function checkTodos() {
-  try {
-    await connectDB();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-/**
  * @returns An array of documents that
  */
 export async function getNotify(): Promise<ITodo[] | undefined> {
