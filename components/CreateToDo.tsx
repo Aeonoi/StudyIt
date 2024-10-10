@@ -30,7 +30,7 @@ const formSchema = z.object({
   description: z.string(),
 });
 
-const priorities = ["low", "medium", "high"];
+const priorities = ["Low", "Medium", "High"];
 
 const CreateTodo = () => {
   const { toast } = useToast();
@@ -48,12 +48,15 @@ const CreateTodo = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
-      await createTodo(
-        values.title,
-        values.date,
-        values.priority,
-        values.description,
-      );
+      let priority = 0;
+
+      if (values.priority.toLowerCase() === "medium") {
+        priority = 1;
+      } else if (values.priority.toLowerCase() === "high") {
+        priority = 2;
+      }
+
+      await createTodo(values.title, values.date, priority, values.description);
       toast({
         title: "Successfully created todo",
         description: (

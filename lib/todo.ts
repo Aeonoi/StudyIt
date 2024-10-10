@@ -1,6 +1,6 @@
 "use server";
 
-import Todo from "@/models/todo";
+import Todo, { type ITodo } from "@/models/todo";
 import connectDB from "./connect-mongo";
 import type { CalendarEvent } from "@/components/DashboardCalendar";
 import moment from "moment";
@@ -43,8 +43,43 @@ export async function getCalendarEvents() {
   }
 }
 
-// called on application start and sorts the todos by closed date and checks if there are any that need to be completed
-export async function checkTodos() { }
+/**
+ * Removes any todos that have passed their deadlines (more than 3 days)
+ */
+export async function checkTodos() {
+  try {
+    await connectDB();
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-// create a toast notification telling user that one or more todo dates have been reached
-export async function notify() { }
+/**
+ * @returns An array of documents that
+ */
+export async function getNotify(): Promise<ITodo[] | undefined> {
+  try {
+    await connectDB();
+
+    const todos: ITodo[] = await Todo.find({
+      dueDate: {
+        $gte: new Date(),
+        $lte: new Date(new Date().setDate(new Date().getDate() + 3)),
+      },
+    }).sort({ priority: -1 });
+    console.log(todos);
+    return JSON.parse(JSON.stringify(todos));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getPriority(value: number) {
+  let priority = "Low";
+  if (value === 1) {
+    priority = "Medium";
+  } else if (value === 2) {
+    priority = "High";
+  }
+  return priority;
+}

@@ -560,7 +560,7 @@ export async function getRankLogs(): Promise<IRankLog[] | undefined> {
 export async function createTodo(
   title: string,
   dueDate: string,
-  priority: string,
+  priority: number,
   description: string,
 ) {
   try {
