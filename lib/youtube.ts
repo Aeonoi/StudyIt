@@ -11,8 +11,6 @@ const TYPE: string = "video"; // channel, video
 const YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v=";
 const MAX_RESULTS = 20;
 
-// downloads the yotuube video as mp3
-
 // defines type for returned json
 interface YoutubeAPITypes {
   kind: "youtube#searchResult";

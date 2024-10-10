@@ -14,7 +14,7 @@ interface SlotInfo {
   start: Date;
   end: Date;
   slots: Date[];
-  action: "select" | "click" | "doubleClick"; // Type of action performed
+  action: "select" | "click" | "doubleClick";
 }
 
 const localizer = momentLocalizer(moment);
@@ -67,8 +67,8 @@ const DashboardCalendar: React.FC = () => {
       style={{ height: 500 }}
       date={currentDate}
       view={currentView}
-      onNavigate={handleNavigate} // Handles next/previous
-      onView={handleViewChange} // Handles switching views (month, week, day)
+      onNavigate={handleNavigate}
+      onView={handleViewChange}
       selectable
       onSelectEvent={handleSelectEvent}
       onSelectSlot={handleSelectSlot}
