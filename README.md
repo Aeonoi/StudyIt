@@ -34,10 +34,10 @@
 
 ### To-Do:
 
-* [ ] Create to-dos 
-* [ ] Store to-dos
-* [ ] Set deadlines (link with a calendar)
-* [ ] Notify upcoming deadlines (alerts on page open)
+* [X] Create to-dos 
+* [X] Store to-dos
+* [X] Set deadlines (link with a calendar)
+* [X] Notify upcoming deadlines (alerts on page open)
 
 ### Music:
 * [x] Play music audio 
