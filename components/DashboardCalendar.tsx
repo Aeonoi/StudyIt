@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { getCalendarEvents } from "@/lib/todo";
 
 export interface CalendarEvent {
   start: Date;
@@ -17,14 +16,17 @@ interface SlotInfo {
   action: "select" | "click" | "doubleClick";
 }
 
+interface Props {
+  eventsList: CalendarEvent[];
+}
+
 const localizer = momentLocalizer(moment);
 
-const DashboardCalendar: React.FC = () => {
+const DashboardCalendar: React.FC<Props> = ({ eventsList }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<
     "month" | "day" | "week" | "work_week" | "agenda"
   >("month");
-  const [eventsList, setEventsList] = useState<CalendarEvent[]>([]);
 
   // Handler when an event is clicked
   const handleSelectEvent = (event: CalendarEvent) => {
@@ -51,13 +53,10 @@ const DashboardCalendar: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const events = await getCalendarEvents();
-      setEventsList(events);
-      console.log(events);
-    };
-    fetchEvents();
-  }, []);
+    console.log("In DashboardCalendar");
+    console.log(eventsList);
+  }, [eventsList]);
+
   return (
     <Calendar
       localizer={localizer}

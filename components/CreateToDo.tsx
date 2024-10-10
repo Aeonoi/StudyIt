@@ -21,6 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { createTodo } from "@/lib/mongo-functions";
+import type { CalendarEvent } from "./DashboardCalendar";
+import moment from "moment";
 
 // unknown type for optional
 const formSchema = z.object({
@@ -32,7 +34,11 @@ const formSchema = z.object({
 
 const priorities = ["Low", "Medium", "High"];
 
-const CreateTodo = () => {
+interface Props {
+  setChanged: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const CreateTodo: React.FC<Props> = ({ setChanged }) => {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,6 +73,8 @@ const CreateTodo = () => {
           </pre>
         ),
       });
+      // update the calendar
+      setChanged(true);
     } catch (error) {
       console.error("Form submission error", error);
       toast({

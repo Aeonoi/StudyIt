@@ -569,7 +569,7 @@ export async function createTodo(
     // Store date in local timezone
     const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
     console.log(utcDate);
-    await Todo.create({
+    const todo = await Todo.create({
       name: title,
       createdDate: new Date(),
       dueDate: utcDate,
@@ -577,6 +577,7 @@ export async function createTodo(
       description: description,
     });
     console.log("success");
+    return JSON.parse(JSON.stringify(todo));
   } catch (error) {
     console.error(error);
   }
