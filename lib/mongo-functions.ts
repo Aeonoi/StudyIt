@@ -565,10 +565,14 @@ export async function createTodo(
 ) {
   try {
     await connectDB();
+    const date = new Date(dueDate);
+    // Store date in local timezone
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    console.log(utcDate);
     await Todo.create({
       name: title,
       createdDate: new Date(),
-      dueDate: new Date(dueDate),
+      dueDate: utcDate,
       priority: priority,
       description: description,
     });
