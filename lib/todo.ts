@@ -28,8 +28,7 @@ export async function getCalendarEvents() {
     const calendarEvents: CalendarEvent[] = [];
 
     todos.map((todo) => {
-      const currentDate: Date = moment.utc(todo.dueDate).toDate();
-      console.log(currentDate);
+      const currentDate: Date = todo.dueDate;
 
       calendarEvents.push({
         start: currentDate,

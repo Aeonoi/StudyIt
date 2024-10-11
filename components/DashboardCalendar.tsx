@@ -43,7 +43,7 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList }) => {
 
   // Handler for navigating to the next or previous time period
   const handleNavigate = (date: Date) => {
-    setCurrentDate(moment.utc(date).toDate());
+    setCurrentDate(date);
   };
 
   const handleViewChange = (
