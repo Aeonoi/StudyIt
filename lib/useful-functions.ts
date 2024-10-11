@@ -46,10 +46,6 @@ export function convertMsToSeconds(time: number): number {
   return time / 1000;
 }
 
-export function exportISOString(date: Date): string {
-  return `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()}`;
-}
-
 export function convertMinutesToHours(time: number) {
   return time / 60;
 }
@@ -61,6 +57,16 @@ export function getGroupedTotalFocusTime(arr: IFocus[]) {
   });
   Number(ret.toFixed(2));
   return ret;
+}
+
+export function getReadableDate(oldDate: Date) {
+  const date = new Date(oldDate);
+  const month = date.getUTCMonth() + 1;
+  const day = date.getUTCDate();
+  const year = date.getUTCFullYear();
+  debug_print([date, month, day, year]);
+
+  return `${month}/${day}/${year}`;
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: only for debugging

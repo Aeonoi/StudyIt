@@ -548,15 +548,6 @@ export async function getGroupedFocusesByYear() {
   return focuses;
 }
 
-export async function getRankLogs(): Promise<IRankLog[] | undefined> {
-  try {
-    await connectDB();
-    return JSON.parse(JSON.stringify(await RankLog.find().sort({ time: -1 })));
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 export async function createTodo(
   title: string,
   dueDate: string,

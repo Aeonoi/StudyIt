@@ -17,10 +17,8 @@ import connectDB from "./connect-mongo";
 import type { IRank } from "@/models/rank";
 import Rank from "@/models/rank";
 import { CheckRankCollection } from "./mongo-functions";
-import Login, { type ILogin } from "@/models/logins";
-import RankLog from "@/models/ranklog";
+import RankLog, { type IRankLog } from "@/models/ranklog";
 import { compareTwoDates } from "./useful-functions";
-import { RemoveFormattingIcon } from "lucide-react";
 
 /**
  * function that determines the number of points to give
@@ -320,6 +318,105 @@ export async function pausedFocus() {
   try {
     await connectDB();
     updateRank(-100, "paused focus");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getRankLogs(): Promise<IRankLog[] | undefined> {
+  try {
+    await connectDB();
+    return JSON.parse(JSON.stringify(await RankLog.find().sort({ time: -1 })));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export interface GroupedSortedRanks {
+  _id: string;
+  documents: IRankLog[];
+}
+
+/**
+ * @returns An array of documents grouped by the days
+ */
+export async function getSortedRanks() {
+  try {
+    await connectDB();
+
+    const allRankLogs = await RankLog.find().sort({ time: -1 });
+    const diff: number = compareTwoDates(
+      allRankLogs[0].time,
+      allRankLogs[allRankLogs.length - 1].time,
+    );
+
+    let sortedRanks: GroupedSortedRanks[] = [];
+
+    // show by day
+    if (diff < 20) {
+      sortedRanks = await RankLog.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$time" } },
+            documents: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $sort: { _id: -1 },
+        },
+      ]);
+    }
+    // show by months
+    else if (diff < 366) {
+      sortedRanks = await RankLog.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m", date: "$time" } },
+            documents: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $sort: { _id: -1 },
+        },
+        {
+          $project: {
+            _id: 1,
+            documents: {
+              $sortArray: {
+                input: "$documents",
+                sortBy: { time: -1 }, // Sort by the `time` field in descending order (most recent first)
+              },
+            },
+          },
+        },
+      ]);
+    }
+    // show by year
+    else {
+      sortedRanks = await RankLog.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y", date: "$time" } },
+            documents: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $sort: { _id: -1 },
+        },
+        {
+          $project: {
+            _id: 1,
+            documents: {
+              $sortArray: {
+                input: "$documents",
+                sortBy: { time: -1 }, // Sort by the `time` field in descending order (most recent first)
+              },
+            },
+          },
+        },
+      ]);
+    }
+    return JSON.parse(JSON.stringify(sortedRanks));
   } catch (error) {
     console.error(error);
   }
