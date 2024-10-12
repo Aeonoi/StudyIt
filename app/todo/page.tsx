@@ -41,7 +41,7 @@ const TodoPage: React.FC = () => {
       <div className="m-10">
         <CreateTodo setChanged={setChanged} />
       </div>
-      <DashboardCalendar eventsList={eventsList} />
+      <DashboardCalendar eventsList={eventsList} setChanged={setChanged} />
     </>
   );
 };

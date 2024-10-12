@@ -34,6 +34,7 @@ export async function getCalendarEvents() {
         start: currentDate,
         end: currentDate,
         title: todo.name,
+        id: todo._id,
       });
     });
     return JSON.parse(JSON.stringify(calendarEvents));
@@ -70,4 +71,13 @@ export async function getPriority(value: number) {
     priority = "High";
   }
   return priority;
+}
+
+export async function removeEvent(id: string) {
+  try {
+    await connectDB();
+    await Todo.findByIdAndDelete(id);
+  } catch (error) {
+    console.error(error);
+  }
 }

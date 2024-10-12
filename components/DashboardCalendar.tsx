@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { removeEvent } from "@/lib/todo";
+import PopupDialog from "./PopupDialog";
 
 export interface CalendarEvent {
   start: Date;
   end: Date;
   title: string;
+  id?: string;
 }
 
 interface SlotInfo {
@@ -18,27 +23,27 @@ interface SlotInfo {
 
 interface Props {
   eventsList: CalendarEvent[];
+  setChanged: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const localizer = momentLocalizer(moment);
 
-const DashboardCalendar: React.FC<Props> = ({ eventsList }) => {
+const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<
     "month" | "day" | "week" | "work_week" | "agenda"
   >("month");
 
-  // Handler when an event is clicked
+  // Controls the popup dialog
+  const [isOpened, setOpened] = useState<boolean>(false);
+
   const handleSelectEvent = (event: CalendarEvent) => {
-    alert(`Event clicked: ${event.title}`);
+    setOpened(true);
   };
 
-  // Handler when a slot is clicked (for adding new events)
   const handleSelectSlot = (slotInfo: SlotInfo) => {
-    console.log(slotInfo);
-    const start = slotInfo.start;
-    const end = slotInfo.end;
-    alert(`Selected slot from ${start} to ${end}`);
+    // TODO: Work on what to display
+    setOpened(true);
   };
 
   // Handler for navigating to the next or previous time period
@@ -52,27 +57,103 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList }) => {
     setCurrentView(view);
   };
 
+  // Ref to store the Card element
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  // Detect click outside of Card to close the context menu
   useEffect(() => {
-    console.log("In DashboardCalendar");
-    console.log(eventsList);
-  }, [eventsList]);
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if the click was outside the Card (if it exists)
+      if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
+        setShowContextMenu(false); // Close the context menu
+      }
+    };
+    // Add event listener for mousedown (left click or any click)
+    document.addEventListener("mousedown", handleClickOutside);
+    // Cleanup the event listener when component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
+  const [position, setPosition] = useState<
+    { x: number; y: number } | undefined
+  >(undefined);
 
   return (
-    <Calendar
-      localizer={localizer}
-      events={eventsList}
-      startAccessor="start"
-      endAccessor="end"
-      style={{ height: 500 }}
-      date={currentDate}
-      view={currentView}
-      onNavigate={handleNavigate}
-      onView={handleViewChange}
-      selectable
-      onSelectEvent={handleSelectEvent}
-      onSelectSlot={handleSelectSlot}
-      views={["month", "week", "day"]} // Allowed views
-    />
+    <>
+      <Calendar
+        localizer={localizer}
+        events={eventsList}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        date={currentDate}
+        view={currentView}
+        onNavigate={handleNavigate}
+        onView={handleViewChange}
+        selectable
+        onSelectEvent={handleSelectEvent}
+        onSelectSlot={handleSelectSlot}
+        views={["month", "week", "day"]} // Allowed views
+        components={{
+          eventWrapper: ({ event }) => (
+            <div
+              onContextMenu={(e) => {
+                setShowContextMenu(true);
+                if (event?.id) {
+                  setSelectedEvent(event.id);
+                }
+                // https://stackoverflow.com/questions/6073505/what-is-the-difference-between-screenx-y-clientx-y-and-pagex-y
+                setPosition({ x: e.pageX, y: e.pageY });
+                e.preventDefault();
+              }}
+            >
+              <div className="bg-calendarBlue rounded-sm p-1">
+                {event.title}
+              </div>
+            </div>
+          ),
+        }}
+      />
+      {showContextMenu && (
+        <Card
+          ref={cardRef}
+          style={{
+            position: "absolute",
+            top: position?.y,
+            left: position?.x,
+            zIndex: 1000,
+          }}
+          className="grid grid-rows-2"
+        >
+          <Button
+            variant={"ghost"}
+            onClick={() => {
+              removeEvent(selectedEvent);
+              setChanged(true);
+              setShowContextMenu(false);
+            }}
+          >
+            Remove
+          </Button>
+          <Button
+            variant={"ghost"}
+            onClick={() => {
+              setShowContextMenu(false);
+            }}
+          >
+            Reschedule
+          </Button>
+        </Card>
+      )}
+      <PopupDialog isOpened={isOpened} setOpened={setOpened}>
+        {/* TODO: Add content */}
+        hello
+      </PopupDialog>
+    </>
   );
 };
 
