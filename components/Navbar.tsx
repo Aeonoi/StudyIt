@@ -9,7 +9,7 @@ function Navbar(): JSX.Element {
   const navItems = [
     { name: "Dashboard", path: "./" },
     { name: "Focus", path: "./focus" },
-    { name: "To-Do", path: "./todo" },
+    { name: "Events", path: "./todo" },
     { name: "Analysis", path: "./analysis" },
     { name: "Rank", path: "./rank" },
   ];

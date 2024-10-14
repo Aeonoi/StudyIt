@@ -59,12 +59,14 @@ export function getGroupedTotalFocusTime(arr: IFocus[]) {
   return ret;
 }
 
-export function getReadableDate(oldDate: Date) {
+export function getReadableDate(oldDate: Date | undefined) {
+  if (!oldDate) {
+    return;
+  }
   const date = new Date(oldDate);
   const month = date.getUTCMonth() + 1;
   const day = date.getUTCDate();
   const year = date.getUTCFullYear();
-  debug_print([date, month, day, year]);
 
   return `${month}/${day}/${year}`;
 }

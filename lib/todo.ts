@@ -30,11 +30,23 @@ export async function getCalendarEvents() {
     todos.map((todo) => {
       const currentDate: Date = todo.dueDate;
 
+      const priority = (value: number) => {
+        let priority = "Low";
+        if (value === 1) {
+          priority = "Medium";
+        } else if (value === 2) {
+          priority = "High";
+        }
+        return priority;
+      };
+
       calendarEvents.push({
         start: currentDate,
         end: currentDate,
         title: todo.name,
         id: todo._id,
+        description: todo.description,
+        priority: priority(todo.priority),
       });
     });
     return JSON.parse(JSON.stringify(calendarEvents));

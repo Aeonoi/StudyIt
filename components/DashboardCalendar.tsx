@@ -6,12 +6,15 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { removeEvent } from "@/lib/todo";
 import PopupDialog from "./PopupDialog";
+import { getReadableDate } from "@/lib/useful-functions";
 
 export interface CalendarEvent {
   start: Date;
   end: Date;
   title: string;
-  id?: string;
+  id: string;
+  description: string;
+  priority: string;
 }
 
 interface SlotInfo {
@@ -37,14 +40,10 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
   // Controls the popup dialog
   const [isOpened, setOpened] = useState<boolean>(false);
 
-  const handleSelectEvent = (event: CalendarEvent) => {
-    setOpened(true);
-  };
-
-  const handleSelectSlot = (slotInfo: SlotInfo) => {
-    // TODO: Work on what to display
-    setOpened(true);
-  };
+  // controls the information
+  const [currentEvent, setCurrentEvent] = useState<CalendarEvent | undefined>(
+    undefined,
+  );
 
   // Handler for navigating to the next or previous time period
   const handleNavigate = (date: Date) => {
@@ -95,12 +94,15 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
         onNavigate={handleNavigate}
         onView={handleViewChange}
         selectable
-        onSelectEvent={handleSelectEvent}
-        onSelectSlot={handleSelectSlot}
         views={["month", "week", "day"]} // Allowed views
         components={{
           eventWrapper: ({ event }) => (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: just use onClick
             <div
+              onClick={() => {
+                setOpened(true);
+                setCurrentEvent(event);
+              }}
               onContextMenu={(e) => {
                 setShowContextMenu(true);
                 if (event?.id) {
@@ -149,9 +151,20 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
           </Button>
         </Card>
       )}
-      <PopupDialog isOpened={isOpened} setOpened={setOpened}>
-        {/* TODO: Add content */}
-        hello
+      <PopupDialog
+        isOpened={isOpened}
+        setOpened={setOpened}
+        title="Selected Event"
+      >
+        <div className="grid grid-rows-4 items-center justify-center">
+          <div>{currentEvent?.title}</div>
+          <div>
+            Deadline: {getReadableDate(currentEvent?.end)}{" "}
+            {currentEvent?.end.toLocaleTimeString()}
+          </div>
+          <div>Description: {currentEvent?.description}</div>
+          <div>Priority: {currentEvent?.priority}</div>
+        </div>
       </PopupDialog>
     </>
   );
