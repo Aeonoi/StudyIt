@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { removeEvent } from "@/lib/todo";
 import PopupDialog from "./PopupDialog";
 import { getReadableDate } from "@/lib/useful-functions";
+import { Input } from "./ui/input";
 
 export interface CalendarEvent {
   start: Date;
@@ -15,13 +16,6 @@ export interface CalendarEvent {
   id: string;
   description: string;
   priority: string;
-}
-
-interface SlotInfo {
-  start: Date;
-  end: Date;
-  slots: Date[];
-  action: "select" | "click" | "doubleClick";
 }
 
 interface Props {
@@ -80,6 +74,9 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
   const [position, setPosition] = useState<
     { x: number; y: number } | undefined
   >(undefined);
+
+  const [showReschedule, setShowReschedule] = useState<boolean>(false);
+  const rescheduleRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -145,12 +142,24 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
             variant={"ghost"}
             onClick={() => {
               setShowContextMenu(false);
+              setShowReschedule(true);
             }}
           >
             Reschedule
           </Button>
         </Card>
       )}
+      <PopupDialog
+        isOpened={showReschedule}
+        setOpened={setShowReschedule}
+        title="Reschule event"
+        isReschedule={true}
+        setChanged={setChanged}
+        ref={rescheduleRef}
+        id={selectedEvent}
+      >
+        <Input ref={rescheduleRef} type="date" />
+      </PopupDialog>
       <PopupDialog
         isOpened={isOpened}
         setOpened={setOpened}

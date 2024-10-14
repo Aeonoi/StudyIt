@@ -1,9 +1,9 @@
+// TODO: Move getPriority function to different file since it requires to be async function
 "use server";
 
 import Todo, { type ITodo } from "@/models/todo";
 import connectDB from "./connect-mongo";
 import type { CalendarEvent } from "@/components/DashboardCalendar";
-import moment from "moment";
 
 /**
  * @returns An array of all todos in the default format (same as model)
@@ -50,6 +50,16 @@ export async function getCalendarEvents() {
       });
     });
     return JSON.parse(JSON.stringify(calendarEvents));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateTodo(id: string, content: Partial<ITodo>) {
+  try {
+    await connectDB();
+
+    await Todo.findByIdAndUpdate(id, content, { new: true });
   } catch (error) {
     console.error(error);
   }
