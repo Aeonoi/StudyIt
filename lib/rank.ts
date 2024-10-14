@@ -255,7 +255,7 @@ export async function login(consecutive_days: number) {
 /**
  * when the user is focusing, they gain points via the amount they have spent focusing
  * @param time - Time in minutes
- * @param marathon - optional to determine whether focus is via a marathon focus or not
+ * @param marathon - to determine whether focus is via a marathon focus or not
  */
 export async function focusing(time: number, marathon: boolean) {
   try {
