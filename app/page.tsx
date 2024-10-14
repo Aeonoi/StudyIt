@@ -20,7 +20,7 @@ export default function Home() {
       <div className="h-[25vh] ">
         <NonChartCards />
       </div>
-      <div className="grid grid-cols-3 items-center justify-center p-8 pb-20 gap-10 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="grid grid-cols-2 items-center justify-center p-8 pb-20 gap-10 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <ChartTotalFocus />
         <ChartLineTotalFocus />
       </div>

@@ -38,10 +38,10 @@ const TodoPage: React.FC = () => {
   return (
     <>
       <Navbar />
-      <div className="m-10">
+      <div className="grid grid-cols-2 m-5">
         <CreateTodo setChanged={setChanged} />
+        <DashboardCalendar eventsList={eventsList} setChanged={setChanged} />
       </div>
-      <DashboardCalendar eventsList={eventsList} setChanged={setChanged} />
     </>
   );
 };

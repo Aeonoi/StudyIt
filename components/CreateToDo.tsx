@@ -136,6 +136,7 @@ const CreateTodo: React.FC<Props> = ({ setChanged }) => {
             <FormItem>
               <FormLabel>Due Date</FormLabel>
               <FormControl>
+                {/* <Input type="date" {...field} /> */}
                 <Input type="date" {...field} />
               </FormControl>
               <FormMessage />
