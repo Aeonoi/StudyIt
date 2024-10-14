@@ -7,7 +7,6 @@
 * [x] Bar Chart: Hours spent on different assignments/tests, etc.
 * [x] Line Chart: The total time spent throughout the month (or year)
 * [ ] Current rank, progress of milestone 
-* [ ] Current calendar that contains all the deadlines or any scheduled studying sessions (should be interactive, can add dates and deadlines)
 * [ ] Current progress towards a set goal (can select which one to view)
 
 ### Studying/Focus:
@@ -38,6 +37,7 @@
 * [X] Store to-dos
 * [X] Set deadlines (link with a calendar)
 * [X] Notify upcoming deadlines (alerts on page open)
+* [X] Current calendar that contains all the deadlines or any scheduled studying sessions (should be interactive, can add dates and deadlines)
 
 ### Music:
 * [x] Play music audio 
@@ -51,7 +51,7 @@
 * Queries the different days and checks if they are back to back.
 * [X] Create a rank system for these data points (bronze, silver, etc.)
 * Lose points for not accomplishing certain milestones
-* [ ] Have medals/achievements for reaching certain points
+* [X] Have medals/achievements for reaching certain points
 
 ### Settings/Preferences: 
 
