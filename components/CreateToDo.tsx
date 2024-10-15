@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { createTodo } from "@/lib/mongo-functions";
-import moment from "moment";
+import { createTodo } from "@/lib/todo";
 
 // unknown type for optional
 const formSchema = z.object({

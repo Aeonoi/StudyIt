@@ -547,37 +547,3 @@ export async function getGroupedFocusesByYear() {
 
   return focuses;
 }
-
-export async function createTodo(
-  title: string,
-  dueDate: string,
-  time: string,
-  priority: number,
-  description: string,
-) {
-  try {
-    await connectDB();
-    const date = new Date(dueDate);
-    // Store date in utc timezone
-    let [hours, minutes] = [0, 0];
-    if (typeof time === "string") {
-      [hours, minutes] = time.split(":").map(Number);
-    }
-    const utcDate = new Date(
-      date.getTime() +
-      (date.getTimezoneOffset() + minutes + hours * 60) * 60000,
-    );
-    console.log(utcDate);
-    const todo = await Todo.create({
-      name: title,
-      createdDate: new Date(),
-      dueDate: utcDate,
-      priority: priority,
-      description: description,
-    });
-    console.log("success");
-    return JSON.parse(JSON.stringify(todo));
-  } catch (error) {
-    console.error(error);
-  }
-}
