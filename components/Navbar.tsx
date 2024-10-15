@@ -21,13 +21,11 @@ function Navbar(): JSX.Element {
 
   for (const item of navItems) {
     result.push(
-      <div>
-        <Button asChild key={item.name} variant={"link"}>
-          <Link onClick={() => setOpen(false)} href={item.path}>
-            {item.name}
-          </Link>
-        </Button>
-      </div>,
+      <Button asChild key={item.name} variant={"link"}>
+        <Link onClick={() => setOpen(false)} href={item.path}>
+          {item.name}
+        </Link>
+      </Button>,
     );
   }
 
