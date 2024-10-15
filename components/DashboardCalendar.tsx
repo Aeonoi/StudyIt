@@ -94,6 +94,7 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
         selectable
         views={["month", "week", "day"]} // Allowed views
         components={{
+          // FIX: Figure out why it works when eventWrapper does not take in children prop
           eventWrapper: ({ event, children }) => (
             // biome-ignore lint/a11y/useKeyWithClickEvents: just use onClick
             <div
