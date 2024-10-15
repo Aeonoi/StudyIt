@@ -1,7 +1,7 @@
 "use client";
 import CreateTodo from "@/components/CreateToDo";
 import DashboardCalendar, {
-  type CalendarEvent,
+  type CustomCalendarEvent,
 } from "@/components/DashboardCalendar";
 import Navbar from "@/components/Navbar";
 import { getCalendarEvents } from "@/lib/todo";
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 /**
  * Fixes the issue with server-side component passed to the client-side component
  */
-const convertEventsToDateObjects = (events: CalendarEvent[]) => {
+const convertEventsToDateObjects = (events: CustomCalendarEvent[]) => {
   return events.map((event) => ({
     ...event,
     start: new Date(event.start),
@@ -19,7 +19,7 @@ const convertEventsToDateObjects = (events: CalendarEvent[]) => {
 };
 
 const TodoPage: React.FC = () => {
-  const [eventsList, setEventsList] = useState<CalendarEvent[]>([]);
+  const [eventsList, setEventsList] = useState<CustomCalendarEvent[]>([]);
   const [changed, setChanged] = useState<boolean>(false);
 
   useEffect(() => {

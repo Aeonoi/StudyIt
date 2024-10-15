@@ -3,7 +3,7 @@
 
 import Todo, { type ITodo } from "@/models/todo";
 import connectDB from "./connect-mongo";
-import type { CalendarEvent } from "@/components/DashboardCalendar";
+import type { CustomCalendarEvent } from "@/components/DashboardCalendar";
 
 /**
  * @returns An array of all todos in the default format (same as model)
@@ -25,7 +25,7 @@ export async function getCalendarEvents() {
     await connectDB();
     const todos = await Todo.find();
 
-    const calendarEvents: CalendarEvent[] = [];
+    const calendarEvents: CustomCalendarEvent[] = [];
 
     todos.map((todo) => {
       const currentDate: Date = todo.dueDate;

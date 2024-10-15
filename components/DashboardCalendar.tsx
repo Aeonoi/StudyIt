@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { ComponentType, useEffect, useRef, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -9,7 +9,7 @@ import PopupDialog from "./PopupDialog";
 import { getReadableDate } from "@/lib/useful-functions";
 import { Input } from "./ui/input";
 
-export interface CalendarEvent {
+export interface CustomCalendarEvent {
   start: Date;
   end: Date;
   title: string;
@@ -19,7 +19,7 @@ export interface CalendarEvent {
 }
 
 interface Props {
-  eventsList: CalendarEvent[];
+  eventsList: CustomCalendarEvent[];
   setChanged: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -35,9 +35,9 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
   const [isOpened, setOpened] = useState<boolean>(false);
 
   // controls the information
-  const [currentEvent, setCurrentEvent] = useState<CalendarEvent | undefined>(
-    undefined,
-  );
+  const [currentEvent, setCurrentEvent] = useState<
+    CustomCalendarEvent | undefined
+  >(undefined);
 
   // Handler for navigating to the next or previous time period
   const handleNavigate = (date: Date) => {
@@ -94,7 +94,7 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
         selectable
         views={["month", "week", "day"]} // Allowed views
         components={{
-          eventWrapper: ({ event }) => (
+          eventWrapper: ({ event, children }) => (
             // biome-ignore lint/a11y/useKeyWithClickEvents: just use onClick
             <div
               onClick={() => {
@@ -111,9 +111,7 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
                 e.preventDefault();
               }}
             >
-              <div className="bg-calendarBlue rounded-sm p-1">
-                {event.title}
-              </div>
+              {children}
             </div>
           ),
         }}
