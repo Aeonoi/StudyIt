@@ -21,7 +21,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { createTodo } from "@/lib/mongo-functions";
-import type { CalendarEvent } from "./DashboardCalendar";
 import moment from "moment";
 
 // unknown type for optional
@@ -29,6 +28,7 @@ const formSchema = z.object({
   title: z.string(),
   priority: z.string(),
   date: z.string(),
+  time: z.string(),
   description: z.string(),
 });
 
@@ -48,6 +48,7 @@ const CreateTodo: React.FC<Props> = ({ setChanged }) => {
       date: "",
       priority: "",
       description: "",
+      time: "",
     },
   });
 
@@ -62,7 +63,13 @@ const CreateTodo: React.FC<Props> = ({ setChanged }) => {
         priority = 2;
       }
 
-      await createTodo(values.title, values.date, priority, values.description);
+      await createTodo(
+        values.title,
+        values.date,
+        values.time,
+        priority,
+        values.description,
+      );
       toast({
         title: "Successfully created todo",
         description: (
@@ -138,6 +145,20 @@ const CreateTodo: React.FC<Props> = ({ setChanged }) => {
               <FormControl>
                 {/* <Input type="date" {...field} /> */}
                 <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="time"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Due Time</FormLabel>
+              <FormControl>
+                <Input type="time" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

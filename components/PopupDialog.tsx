@@ -14,11 +14,21 @@ interface Props {
   setChanged?: React.Dispatch<React.SetStateAction<boolean>>;
   ref?: React.Ref<HTMLInputElement>;
   id?: string;
+  timeRef?: React.Ref<HTMLInputElement>;
 }
 
 const PopupDialog = forwardRef<HTMLInputElement, Props>(
   (
-    { children, title, isOpened, setOpened, isReschedule, setChanged, id },
+    {
+      children,
+      title,
+      isOpened,
+      setOpened,
+      isReschedule,
+      setChanged,
+      id,
+      timeRef,
+    },
     ref,
   ) => {
     return (
@@ -38,12 +48,21 @@ const PopupDialog = forwardRef<HTMLInputElement, Props>(
                       ref &&
                       "current" in ref &&
                       ref.current &&
-                      ref.current.value !== ""
+                      ref.current.value !== "" &&
+                      timeRef &&
+                      "current" in timeRef &&
+                      timeRef.current &&
+                      timeRef.current.value !== ""
                     ) {
                       const date = new Date(ref.current.value);
+                      const [hours, minutes] = timeRef.current.value
+                        .split(":")
+                        .map(Number);
                       updateTodo(id, {
                         dueDate: new Date(
-                          date.getTime() + date.getTimezoneOffset() * 60000,
+                          date.getTime() +
+                          (date.getTimezoneOffset() + minutes + hours * 60) *
+                          60000,
                         ),
                       });
                       setChanged(true);

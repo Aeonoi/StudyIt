@@ -77,6 +77,7 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
 
   const [showReschedule, setShowReschedule] = useState<boolean>(false);
   const rescheduleRef = useRef<HTMLInputElement>(null);
+  const timeRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -157,8 +158,10 @@ const DashboardCalendar: React.FC<Props> = ({ eventsList, setChanged }) => {
         setChanged={setChanged}
         ref={rescheduleRef}
         id={selectedEvent}
+        timeRef={timeRef}
       >
         <Input ref={rescheduleRef} type="date" />
+        <Input ref={timeRef} type="time" />
       </PopupDialog>
       <PopupDialog
         isOpened={isOpened}
