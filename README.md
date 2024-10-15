@@ -6,7 +6,6 @@
 * [ ] Pie Chart: Hours spread out for each different course/class/subject
 * [x] Bar Chart: Hours spent on different assignments/tests, etc.
 * [x] Line Chart: The total time spent throughout the month (or year)
-* [ ] Current rank, progress of milestone 
 * [ ] Current progress towards a set goal (can select which one to view)
 
 ### Studying/Focus:
@@ -52,6 +51,7 @@
 * [X] Create a rank system for these data points (bronze, silver, etc.)
 * Lose points for not accomplishing certain milestones
 * [X] Have medals/achievements for reaching certain points
+* [X] Current rank, progress of milestone 
 
 ### Settings/Preferences: 
 
