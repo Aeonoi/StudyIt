@@ -76,10 +76,7 @@ const ChartTotalFocus = () => {
       <CardFooter className="flex-col items-start gap-2 text-sm">
         {/* TODO: Add some interesting facts about this part */}
         <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Total focus time by tasks
         </div>
       </CardFooter>
     </Card>
