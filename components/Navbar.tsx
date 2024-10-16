@@ -63,13 +63,19 @@ const Navbar: React.FC = () => {
       </div>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <MenuIcon />
+        <div className="flex justify-end md:hidden">
+          <Button key="theme-switcher" variant={"ghost"} onClick={handleTheme}>
+            {theme === "dark" && <SunIcon size={18} />}
+            {theme === "light" && <MoonIcon size={18} />}
           </Button>
-        </SheetTrigger>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <MenuIcon />
+            </Button>
+          </SheetTrigger>
+        </div>
 
-        <SheetContent side="left">
+        <SheetContent side="right">
           <div className="flex flex-col items-start">{result}</div>
         </SheetContent>
       </Sheet>
