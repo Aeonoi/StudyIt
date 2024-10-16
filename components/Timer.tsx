@@ -69,20 +69,20 @@ const Timer = ({
 
   useEffect(() => {
     if (!pauseState && time > 0) {
-      // const timeDec = 350;
-      // const timer = setInterval(async () => {
-      //   setTime(time - timeDec);
-      //   setElapsedTime((prev) => prev + timeDec);
-      // }, timeDec);
-      //
-      // return () => clearInterval(timer);
+      const timeDec = 350;
+      const timer = setInterval(async () => {
+        setTime(time - timeDec);
+        setElapsedTime((prev) => prev + timeDec);
+      }, timeDec);
 
-      const dec = 100000;
-      const testTimer = setInterval(async () => {
-        setTime(time - dec);
-        setElapsedTime((prev) => prev + dec);
-      }, 350);
-      return () => clearInterval(testTimer);
+      return () => clearInterval(timer);
+
+      // const dec = 100000;
+      // const testTimer = setInterval(async () => {
+      //   setTime(time - dec);
+      //   setElapsedTime((prev) => prev + dec);
+      // }, 350);
+      // return () => clearInterval(testTimer);
     }
   }, [pauseState, time]);
 
