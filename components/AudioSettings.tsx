@@ -58,22 +58,22 @@ const AudioSettings = ({
 
   return (
     <Dialog open={openSettings} onOpenChange={setOpenSettings}>
-      <DialogContent className="sm:max-w-[425px] bg-gray-500">
+      <DialogContent className="sm:max-w-[425px] var(--background)">
         <DialogHeader>
           <DialogTitle>Audio preferences</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <h2 className="text-blue-500">Current preferences:</h2>
+          <h2 className="var(--foreground)">Current preferences:</h2>
           <ul className="grid gap-4 shadow overflow-hidden sm:rounded-md">
             {audioPreferences.map((preference) => (
               <li key={preference}>
                 <div className="grid grid-cols-12">
-                  <h3 className="text-lg font-medium text-gray-900 col-span-10">
+                  <h3 className="text-lg font-medium text-chart-1 col-span-10">
                     {preference}
                   </h3>
                   <Button
                     variant={"ghost"}
-                    className="font-medium text-indigo-600 justify-end hover:bg-transparent col-span-2"
+                    className="font-medium justify-end hover:bg-transparent col-span-2"
                     onClick={() => removePreference(preference)}
                   >
                     <TrashIcon />
@@ -84,7 +84,7 @@ const AudioSettings = ({
           </ul>
         </div>
         <div className="grid gap-4 py-4">
-          <h2 className="text-blue-500">Add audio preference</h2>
+          <h2>Add audio preference</h2>
           <div className="grid grid-cols-4 items-center gap-4">
             <Input
               type="text"

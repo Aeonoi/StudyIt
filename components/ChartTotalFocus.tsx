@@ -6,7 +6,6 @@
  * chart for comparing and seeing the total break times
  */
 "use client";
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -62,12 +61,12 @@ const ChartTotalFocus = () => {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="value" fill="var(--color-desktop)" radius={8}>
+            <Bar dataKey="value" fill="hsl(var(--foreground))" radius={5}>
               <LabelList
                 position="top"
-                offset={12}
+                offset={10}
                 className="fill-foreground"
-                fontSize={12}
+                fontSize={10}
               />
             </Bar>
           </BarChart>

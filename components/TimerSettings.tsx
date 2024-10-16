@@ -88,7 +88,7 @@ const TimerSettings = ({
   // TODO: Be able to set colors/themes
   return (
     <Dialog open={openSettings} onOpenChange={setOpenSettings}>
-      <DialogContent className="sm:max-w-[425px] bg-pink-50">
+      <DialogContent className="sm:max-w-[425px] var(--background)">
         <DialogHeader>
           <DialogTitle className="text-center">Timer Settings</DialogTitle>
           <DialogDescription>Focus Settings</DialogDescription>

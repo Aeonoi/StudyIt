@@ -125,7 +125,7 @@ const Timer = ({
           setPauseAction(true);
           setTime(breakTime);
           setTimerType("BREAK");
-          setCurrentColor("bg-blue-500");
+          setCurrentColor("bg-chart-1");
           setStarted(false);
           completeTask(currentSelectedTask);
           completeFocusSuperTask();
@@ -138,7 +138,7 @@ const Timer = ({
           setPauseAction(true);
           setTime(focusTime);
           setTimerType("FOCUS");
-          setCurrentColor("bg-red-100");
+          setCurrentColor("bg-chart-5");
           setStarted(false);
           completeBreak(currentSelectedTask);
           completeBreakSuperTask();
@@ -151,7 +151,7 @@ const Timer = ({
           setPauseAction(false);
           setTime(marathonBreakTime);
           setTimerType("MARATHONBREAK");
-          setCurrentColor("bg-blue-500");
+          setCurrentColor("bg-chart-1");
           setStarted(true);
           completeTask(currentSelectedTask);
           startBreak(currentSelectedTask);
@@ -165,7 +165,7 @@ const Timer = ({
           setPauseAction(false);
           setTime(marathonTime);
           setTimerType("MARATHON");
-          setCurrentColor("bg-orange-300");
+          setCurrentColor("bg-chart-3");
           setStarted(true);
           completeBreak(currentSelectedTask);
           startTask(currentSelectedTask);
@@ -185,7 +185,7 @@ const Timer = ({
   }, [time]);
 
   // set color of the circle timer
-  const [currentColor, setCurrentColor] = useState("bg-red-100");
+  const [currentColor, setCurrentColor] = useState("bg-chart-5");
 
   const [currentSelectedTask, setCurrentSelectedTask] = useState<string>("");
   const [started, setStarted] = useState<boolean>(false);
@@ -236,9 +236,10 @@ const Timer = ({
         </div>
         <div className="grid grid-cols-3 gap-3 items-center justify-center">
           <Button
+            className="bg-background text-foreground border border-foreground"
             onClick={() => {
               setTime(focusTime);
-              setCurrentColor("bg-red-100");
+              setCurrentColor("bg-chart-5");
               setTimerType("FOCUS");
               reset();
             }}
@@ -246,9 +247,10 @@ const Timer = ({
             Focus
           </Button>
           <Button
+            className="bg-background text-foreground border border-foreground"
             onClick={() => {
               setTime(marathonTime);
-              setCurrentColor("bg-orange-300");
+              setCurrentColor("bg-chart-3");
               setTimerType("MARATHON");
               reset();
             }}
@@ -256,9 +258,10 @@ const Timer = ({
             Marathon
           </Button>
           <Button
+            className="bg-background text-foreground border border-foreground"
             onClick={() => {
               setTime(breakTime);
-              setCurrentColor("bg-blue-500");
+              setCurrentColor("bg-chart-1");
               setTimerType("BREAK");
               reset();
             }}

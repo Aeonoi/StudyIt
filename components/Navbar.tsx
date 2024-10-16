@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Menu as MenuIcon } from "lucide-react";
+import { Menu as MenuIcon, MoonIcon, SunIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 
-function Navbar(): JSX.Element {
+const Navbar: React.FC = () => {
   const navItems = [
     { name: "Dashboard", path: "./" },
     { name: "Focus", path: "./focus" },
@@ -29,10 +30,36 @@ function Navbar(): JSX.Element {
     );
   }
 
+  const { theme, setTheme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  const handleTheme = () => {
+    if (theme === "light") {
+      setTheme("dark");
+      console.log("setting to dark...");
+    } else {
+      setTheme("light");
+      console.log("setting to light...");
+    }
+  };
+
   return (
     <header className="sticky top-0 w-full border-b backdrop-blur-sm">
       <div className="mr-4 hidden gap-2 md:flex items-center justify-center ">
         {result}
+        <Button key="theme-switcher" variant={"ghost"} onClick={handleTheme}>
+          {theme === "dark" && <SunIcon size={18} />}
+          {theme === "light" && <MoonIcon size={18} />}
+        </Button>
       </div>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -48,6 +75,6 @@ function Navbar(): JSX.Element {
       </Sheet>
     </header>
   );
-}
+};
 
 export default Navbar;

@@ -58,7 +58,7 @@ const ChartLineTotalFocus = () => {
             <Line
               dataKey="value"
               type="linear"
-              stroke="var(--color-desktop)"
+              stroke="hsl(var(--foreground))"
               strokeWidth={2}
               dot={false}
             />
