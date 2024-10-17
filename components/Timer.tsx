@@ -227,7 +227,7 @@ const Timer = ({
   };
 
   return (
-    <Card className="max-w-md mx-auto my-auto shadow-md overflow-hidden">
+    <Card className="max-w-md mx-auto my-auto shadow-md overflow-hidden border border-foreground">
       <CardHeader className="grid grid-rows-2 items-center justify-center">
         <div className="flex items-center justify-center">
           <SelectTask

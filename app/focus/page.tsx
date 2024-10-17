@@ -38,7 +38,7 @@ const FocusPage: React.FC = () => {
               id="text"
               name="text"
               rows={5}
-              className="text-wrap rounded-l visible max-w-md overflow-hidden"
+              className="text-wrap visible max-w-sm overflow-hidden bg-background border border-foreground rounded-lg"
               style={{ resize: "none" }}
               value={textareaValue}
               onChange={(val) => setTextareaValue(val.target.value)}

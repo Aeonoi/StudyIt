@@ -32,7 +32,7 @@ const GoogleSearch = ({ openSearch, setOpenSearch }: Props): JSX.Element => {
 
   return (
     <Dialog open={openSearch} onOpenChange={setOpenSearch}>
-      <DialogContent className="sm:max-w-[90vw] max-h-[90vh] bg-white overflow-auto">
+      <DialogContent className="sm:max-w-[90vw] max-h-[90vh] bg-background overflow-auto">
         <DialogHeader>
           <DialogTitle>Search</DialogTitle>
           <DialogDescription>Google Custom Search</DialogDescription>
