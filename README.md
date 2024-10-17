@@ -20,14 +20,15 @@
 * [x] Create a section to take notes (not saved)
 * [x] "Marathon" would be an automatic longer version of regular focus and be continuous, i.e. auto breaks.
 * [ ] Add in option to allow browser only mode (prevents user from leaving tab after timer has started)
+* [X] Warn user when leaving page (within the same site) or refreshing page if timer is started or there are notes
+* [ ] Ability to delete task (should not remove from DB)
 
-### Studying Analysis Tool: 
+### Studying Analysis Tool (Planned): 
 
 * [ ] This will be a page dedicated to other stuff or extra information that is cool to know but isn't really important (not included in the dashboard)
 * [ ] Seeing the history of the studies (sorted/grouped by the different courses/subjects)
-* [ ] See the next milestone/rank
 * [ ] Using the user's data and trends, organize some tips that will pop up
-* [ ] Seeing any noticeable/cool trends such as peak times or the subjects that were spent the most time on
+* [ ] Seeing any noticeable trends such as peak times or the subjects that were spent the most time on
 * [ ] Using data, suggest some goals for the user (i.e. if studies for 5 hours, go for 6 hours or if a user neglects one of their subjects/course, suggest goals for that subject)
 
 ### To-Do:
@@ -51,15 +52,20 @@
 * [X] Create a rank system for these data points (bronze, silver, etc.)
 * Lose points for not accomplishing certain milestones
 * [X] Have medals/achievements for reaching certain points
-* [X] Current rank, progress of milestone 
-
-### Settings/Preferences: 
-
-* [ ] Open settings: (Enable/Disable leaving tab when timer is on) 
+* [X] Show current rank
+* [X] Show progression towards next rank
 
 ### Studying Habits (WIP):
 
 * [ ] Try to promote healthy studying habits.
+
+### Goals
+* [ ] Create goals 
+* Should be progressable and trackable.
+* [ ] Track goals 
+* [ ] Grant points for completing or progressing through the goals
+* [ ] Lose points for neglecting or not finishing goals
+* [ ] Delete goal
 
 ## Getting Started
 
