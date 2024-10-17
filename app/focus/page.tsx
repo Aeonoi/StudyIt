@@ -4,6 +4,7 @@ import GoogleSearch from "@/components/GoogleSearch";
 import Navbar from "@/components/Navbar";
 import PreventLeave from "@/components/PreventLeave";
 import Timer from "@/components/Timer";
+import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import type React from "react";
 
@@ -18,7 +19,7 @@ const FocusPage: React.FC = () => {
 
   return (
     <>
-      <PreventLeave timerOn={!pause} />
+      <PreventLeave timerOn={!pause} wroteNotes={textareaValue !== ""} />
       <div className="grid gap-y-10">
         <Navbar />
         <div
@@ -32,8 +33,8 @@ const FocusPage: React.FC = () => {
             setOpenSettings={setOpenSettings}
           />
           {textareaVisible && (
-            <textarea
-              placeholder="Enter some notes"
+            <Textarea
+              placeholder="Place notes here."
               id="text"
               name="text"
               rows={5}
@@ -45,7 +46,6 @@ const FocusPage: React.FC = () => {
           )}
         </div>
       </div>
-      {/* Bottom of the page, have toggles that bring up the google search or notepad */}
       <BottomNavbar
         textareaState={textareaVisible}
         setOpenSettings={setOpenSettings}
