@@ -5,7 +5,11 @@ import Login from "@/models/logins";
 import type { ISuperTask } from "@/models/superTasks";
 import type { ILogin } from "@/models/logins";
 import connectDB from "./connect-mongo";
-import { compareTwoDates, getGroupedTotalFocusTime } from "./useful-functions";
+import {
+  compareTwoDates,
+  debug_print,
+  getGroupedTotalFocusTime,
+} from "./useful-functions";
 import Task from "@/models/tasks";
 import type { ITask } from "@/models/tasks";
 import {
@@ -50,7 +54,7 @@ export async function getTotalMinutesBreak(): Promise<number | undefined> {
   }
 }
 
-export async function totalLogins() { }
+export async function totalLogins() {}
 
 export async function getLoginStreak(): Promise<number | undefined> {
   try {
@@ -179,16 +183,15 @@ export async function getTotalFocusTime(): Promise<TaskFocus[] | undefined> {
       new Date(focus2._id),
     );
 
-    // if (less than 30 days) -> return all in the correct format
-    // else -> format and sum up all within the same month
-    if (0 < Math.round(difference / 30) && Math.round(difference / 30) <= 12) {
-      console.log(difference / 30);
+    // if more than one month difference, show in months
+    if (1 < Math.floor(difference / 30) && Math.floor(difference / 30) <= 12) {
       allFocuses = await getGroupedFocusesByMonth();
     }
     // more than 12 months difference, show years
-    else if (difference / 30 > 12) {
+    else if (Math.floor(difference / 30) > 12) {
       allFocuses = await getGroupedFocusesByYear();
     }
+    // default shows by days
     allFocuses.reverse().map((groupedFocuses) => {
       ret.push({
         name: groupedFocuses._id,
