@@ -1,25 +1,35 @@
 import type { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface Props {
   timerOn: boolean;
   wroteNotes: boolean;
 }
 
-// currently only works on reloading or closing tab (or browser)
+/**
+ * Alerts user when the user is switching pages or is refreshing page when timer is on and/or
+ * there are notes written in the textarea in the focus/page
+ */
 const PreventLeave: React.FC<Props> = ({ timerOn, wroteNotes }) => {
   const router = useRouter();
+
   useEffect(() => {
+    // const handleVisibilityChange = () => {
+    //   if (document.visibilityState === "hidden") {
+    //     handleLeave();
+    //   }
+    // };
+
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (timerOn || wroteNotes) {
         event.preventDefault();
       }
     };
 
-    const handleRouteChange = (url: string) => {
+    const handleLeave = (url?: string) => {
       if (
-        timerOn &&
+        (timerOn || wroteNotes) &&
         !confirm(
           "Are you sure you want to leave this page? Current progress and notes will be lost.",
         )
@@ -33,12 +43,15 @@ const PreventLeave: React.FC<Props> = ({ timerOn, wroteNotes }) => {
     // Add event listener for page refresh/unload
     window.addEventListener("beforeunload", handleBeforeUnload);
 
+    // // Add event listener for leaving tab
+    // document.addEventListener("visibilitychange", handleVisibilityChange);
+
     // Intercept route changes
     const originalPush = router.push;
 
     router.push = async (url: string, options?: NavigateOptions) => {
       console.log(options);
-      const allowNavigation = handleRouteChange(url);
+      const allowNavigation = handleLeave(url);
       if (allowNavigation) {
         // If confirmed, proceed with navigation
         return originalPush(url, options);
@@ -50,6 +63,7 @@ const PreventLeave: React.FC<Props> = ({ timerOn, wroteNotes }) => {
     // Cleanup
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      // document.removeEventListener("visibilitychange", handleVisibilityChange);
       router.push = originalPush; // Restore original push behavior
     };
   }, [timerOn, wroteNotes, router]);

@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import "../app/globals.css";
+import PreventLeave from "./PreventLeave";
 
 interface Props {
   openSearch: boolean;
