@@ -15,12 +15,6 @@ const PreventLeave: React.FC<Props> = ({ timerOn, wroteNotes }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // const handleVisibilityChange = () => {
-    //   if (document.visibilityState === "hidden") {
-    //     handleLeave();
-    //   }
-    // };
-
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (timerOn || wroteNotes) {
         event.preventDefault();
@@ -43,9 +37,6 @@ const PreventLeave: React.FC<Props> = ({ timerOn, wroteNotes }) => {
     // Add event listener for page refresh/unload
     window.addEventListener("beforeunload", handleBeforeUnload);
 
-    // // Add event listener for leaving tab
-    // document.addEventListener("visibilitychange", handleVisibilityChange);
-
     // Intercept route changes
     const originalPush = router.push;
 
@@ -63,7 +54,6 @@ const PreventLeave: React.FC<Props> = ({ timerOn, wroteNotes }) => {
     // Cleanup
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      // document.removeEventListener("visibilitychange", handleVisibilityChange);
       router.push = originalPush; // Restore original push behavior
     };
   }, [timerOn, wroteNotes, router]);

@@ -18,7 +18,7 @@ export interface IRank extends Document {
   _id: string;
   rank: string;
   points: number;
-  tier: number;
+  tier?: number;
 }
 
 export const RankSchema = new mongoose.Schema({
@@ -30,7 +30,7 @@ export const RankSchema = new mongoose.Schema({
   // goes (lowest tier) 5 - 1 (highest tier)
   tier: {
     type: Number,
-    required: true,
+    required: false,
     default: 5,
   },
   points: {

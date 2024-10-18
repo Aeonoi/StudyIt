@@ -25,7 +25,7 @@ export async function getAllTasks() {
     const allTasks = await Task.find();
     return JSON.parse(JSON.stringify(allTasks));
   } catch (error) {
-    console.error(error);
+    console.error("Error Message Here: ", error);
   }
 }
 

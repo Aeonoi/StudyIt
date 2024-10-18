@@ -1,3 +1,4 @@
+// ALl functions that should not be async
 import type { IFocus } from "@/models/focuses";
 
 export function shuffleArray<T>(array: T[]) {
@@ -80,3 +81,148 @@ export function debug_print(args: any[] = []) {
   });
   console.log("----------------------------------------------------");
 }
+
+/**
+ * @returns A string representation of the current tier (Rank-Division)
+ * or optionally, the next tier. Will return undefined if looking for next rank and current rank is Mythical
+ */
+export function getTier(
+  currentPoints: number,
+  next?: boolean,
+): string | undefined {
+  switch (true) {
+    case currentPoints > 1000 && currentPoints <= 10000: {
+      let tierName = "Bronze-";
+      for (let i = 5; i > 0; i--) {
+        const rankValue = rankPoints.get(tierName + i);
+        if (rankValue !== undefined && rankValue >= currentPoints) {
+          if (next && i > 1) {
+            tierName += i - 1;
+          } else if (next && i <= 1) {
+            tierName = "Silver-5";
+          } else {
+            tierName += i;
+          }
+          break;
+        }
+      }
+      return tierName;
+    }
+    case currentPoints <= 20000: {
+      let tierName = "Silver-";
+      for (let i = 5; i > 0; i--) {
+        const rankValue = rankPoints.get(tierName + i);
+        if (rankValue !== undefined && rankValue >= currentPoints) {
+          if (next && i > 1) {
+            tierName += i - 1;
+          } else if (next && i <= 1) {
+            tierName = "Gold-5";
+          } else {
+            tierName += i;
+          }
+          break;
+        }
+      }
+      return tierName;
+    }
+    case currentPoints <= 50000: {
+      let tierName = "Gold-";
+      for (let i = 5; i > 0; i--) {
+        const rankValue = rankPoints.get(tierName + i);
+        if (rankValue !== undefined && rankValue >= currentPoints) {
+          if (next && i > 1) {
+            tierName += i - 1;
+          } else if (next && i <= 1) {
+            tierName = "Platinum-5";
+          } else {
+            tierName += i;
+          }
+          break;
+        }
+      }
+      return tierName;
+    }
+    case currentPoints <= 100000: {
+      let tierName = "Platinum-";
+      for (let i = 5; i > 0; i--) {
+        const rankValue = rankPoints.get(tierName + i);
+        if (rankValue !== undefined && rankValue >= currentPoints) {
+          if (next && i > 1) {
+            tierName += i - 1;
+          } else if (next && i <= 1) {
+            tierName = "Diamond-5";
+          } else {
+            tierName += i;
+          }
+          break;
+        }
+      }
+      return tierName;
+    }
+    case currentPoints <= 200000: {
+      let tierName = "Diamond-";
+      for (let i = 5; i > 0; i--) {
+        const rankValue = rankPoints.get(tierName + i);
+        if (rankValue !== undefined && rankValue >= currentPoints) {
+          if (next && i > 1) {
+            tierName += i - 1;
+          } else if (next && i <= 1) {
+            tierName = "Masters";
+          } else {
+            tierName += i;
+          }
+          break;
+        }
+      }
+      return tierName;
+    }
+    case currentPoints <= 1000000: {
+      if (next) {
+        return "Mythical";
+      }
+      return "Masters";
+    }
+    case currentPoints > 1000000:
+      if (next) {
+        return undefined;
+      }
+      return "Mythical";
+    default:
+      if (next) {
+        return "Bronze-5";
+      }
+      return "Iron";
+  }
+}
+
+// Rank Name (String) : Maximum Points For Rank (Number)
+export const rankPoints = new Map([
+  ["Iron", 1000],
+  ["Bronze-5", 2800],
+  ["Bronze-4", 4600],
+  ["Bronze-3", 6400],
+  ["Bronze-2", 8200],
+  ["Bronze-1", 10000],
+  ["Silver-5", 12000],
+  ["Silver-4", 14000],
+  ["Silver-3", 16000],
+  ["Silver-2", 18000],
+  ["Silver-1", 20000],
+  ["Gold-5", 26000],
+  ["Gold-4", 32000],
+  ["Gold-3", 38000],
+  ["Gold-2", 44000],
+  ["Gold-1", 50000],
+  ["Platinum-5", 60000],
+  ["Platinum-4", 70000],
+  ["Platinum-3", 80000],
+  ["Platinum-2", 90000],
+  ["Platinum-1", 100000],
+  ["Diamond-5", 120000],
+  ["Diamond-4", 140000],
+  ["Diamond-3", 160000],
+  ["Diamond-2", 180000],
+  ["Diamond-1", 200000],
+  ["Masters", 1000000],
+  ["Mythical", undefined],
+]);

@@ -109,44 +109,89 @@ async function checkRankUpdate() {
     const points = rank.points;
 
     switch (true) {
-      case points > 1000 && points <= 10000:
+      case points > 1000 && points <= 10000: {
+        let tierName = "Bronze";
+        for (let i = 0; i < 5; i++) {
+          const rankValue = rankPoints.get(tierName + i);
+          if (rankValue !== undefined && rankValue >= points) {
+            tierName += i;
+          }
+        }
         await Rank.findByIdAndUpdate(
           rank._id,
-          { rank: "Bronze" },
+          { rank: "Bronze", tier: tierName },
           { new: true },
         );
         break;
-      case points <= 20000:
+      }
+      case points <= 20000: {
+        let tierName = "Silver";
+        for (let i = 0; i < 5; i++) {
+          const rankValue = rankPoints.get(tierName + i);
+          if (rankValue !== undefined && rankValue >= points) {
+            tierName += i;
+          }
+        }
         await Rank.findByIdAndUpdate(
           rank._id,
-          { rank: "Silver" },
+          { rank: "Silver", tier: tierName },
           { new: true },
         );
         break;
-      case points <= 50000:
-        await Rank.findByIdAndUpdate(rank._id, { rank: "Gold" }, { new: true });
-        break;
-      case points <= 100000:
+      }
+      case points <= 50000: {
+        let tierName = "Gold";
+        for (let i = 0; i < 5; i++) {
+          const rankValue = rankPoints.get(tierName + i);
+          if (rankValue !== undefined && rankValue >= points) {
+            tierName += i;
+          }
+        }
         await Rank.findByIdAndUpdate(
           rank._id,
-          { rank: "Platinum" },
+          { rank: "Gold", tier: tierName },
           { new: true },
         );
         break;
-      case points <= 200000:
+      }
+      case points <= 100000: {
+        let tierName = "Platinum";
+        for (let i = 0; i < 5; i++) {
+          const rankValue = rankPoints.get(tierName + i);
+          if (rankValue !== undefined && rankValue >= points) {
+            tierName += i;
+          }
+        }
         await Rank.findByIdAndUpdate(
           rank._id,
-          { rank: "Diamond" },
+          { rank: "Platinum", tier: tierName },
           { new: true },
         );
         break;
-      case points <= 1000000:
+      }
+      case points <= 200000: {
+        let tierName = "Diamond";
+        for (let i = 0; i < 5; i++) {
+          const rankValue = rankPoints.get(tierName + i);
+          if (rankValue !== undefined && rankValue >= points) {
+            tierName += i;
+          }
+        }
+        await Rank.findByIdAndUpdate(
+          rank._id,
+          { rank: "Diamond", tier: tierName },
+          { new: true },
+        );
+        break;
+      }
+      case points <= 1000000: {
         await Rank.findByIdAndUpdate(
           rank._id,
           { rank: "Masters" },
           { new: true },
         );
         break;
+      }
       case points > 1000000:
         await Rank.findByIdAndUpdate(
           rank._id,
@@ -175,7 +220,10 @@ async function updateRank(points: number, desc: string) {
 }
 
 function determineLosePointsNotFocus(remaining: number, type: string) {
-  // lose more points for not completing focuses in case user decides to not take break and finish focusing
+  /**
+   * lose more points for not completing focuses in case user decides to not
+   * take break and finish focusing
+   */
   let points = 100;
   switch (type.toLowerCase()) {
     case "focus":
@@ -253,7 +301,8 @@ export async function login(consecutive_days: number) {
 }
 
 /**
- * when the user is focusing, they gain points via the amount they have spent focusing
+ * when the user is focusing, they gain points via the amount they have spent
+ * focusing
  * @param time - Time in minutes
  * @param marathon - to determine whether focus is via a marathon focus or not
  */

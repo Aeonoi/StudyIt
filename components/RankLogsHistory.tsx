@@ -1,3 +1,4 @@
+"use client";
 import {
   Accordion,
   AccordionContent,
@@ -10,54 +11,18 @@ import Image from "next/image";
 import type { IRank } from "@/models/rank";
 import { getRank } from "@/lib/rank";
 import { Card } from "./ui/card";
-import { getReadableDate } from "@/lib/useful-functions";
+import { getReadableDate, getTier, rankPoints } from "@/lib/useful-functions";
 import { Progress } from "./ui/progress";
 
-const ranks = new Map([
-  ["Iron", 1000],
-  ["Bronze", 10000],
-  ["Gold", 20000],
-  ["Gold", 50000],
-  ["Platinum", 100000],
-  ["Diamond", 200000],
-  ["Masters", 1000000],
-  ["Mythical", undefined],
-]);
-
-const allRanks = [
-  "Iron",
-  "Bronze",
-  "Silver",
-  "Gold",
-  "Platinum",
-  "Diamond",
-  "Masters",
-  "Mythical",
-];
-
-interface RankInfo {
-  rank: string;
-  points: number | undefined;
+interface FullRank {
+  rankName: string;
+  fullRank: string; // includes the division/tier
+  tier: boolean;
 }
 
-const getNextRank = (current: string | undefined) => {
-  if (!current) {
-    return;
-  }
-
-  let idx = allRanks.indexOf(current);
-
-  // element exists
-  if (idx !== -1) {
-    idx = idx !== allRanks.length - 1 ? idx + 1 : allRanks.length - 1;
-  }
-
-  const ret: RankInfo = {
-    rank: allRanks[idx],
-    points: ranks.get(allRanks[idx]),
-  };
-
-  return ret;
+const getNextRank = (currentPoints: number): string | undefined => {
+  const currentRankTier = getTier(currentPoints, true);
+  return currentRankTier;
 };
 
 /**
@@ -68,7 +33,7 @@ const getNextRank = (current: string | undefined) => {
 const getProgress = (
   currentPoints: number | undefined,
   nextRankPoints: number | undefined,
-) => {
+): number | undefined => {
   if (!currentPoints) {
     return;
   }
@@ -87,6 +52,8 @@ const RankLogsHistory = () => {
   );
   const [rank, setRank] = useState<IRank | undefined>(undefined);
 
+  const [nextRank, setNextRank] = useState<FullRank | undefined>(undefined);
+
   useEffect(() => {
     const fetchRank = async () => {
       setRank(await getRank());
@@ -94,6 +61,22 @@ const RankLogsHistory = () => {
     };
     fetchRank();
   }, []);
+
+  useEffect(() => {
+    if (rank) {
+      const next = getNextRank(rank.points);
+      if (next) {
+        const fullRank = next.split("-");
+        fullRank.length === 1
+          ? setNextRank({
+              rankName: fullRank[0],
+              fullRank: fullRank[0],
+              tier: false,
+            })
+          : setNextRank({ rankName: fullRank[0], fullRank: next, tier: true });
+      }
+    }
+  }, [rank]);
 
   return (
     <>
@@ -107,21 +90,23 @@ const RankLogsHistory = () => {
         />
         <Card className="p-3">
           Points: {rank?.points.toFixed(0)}/
-          {getNextRank(rank?.rank)?.points !== undefined
-            ? getNextRank(rank?.rank)?.points
-            : "..."}
+          {nextRank !== undefined ? rankPoints.get(nextRank.fullRank) : "..."}
         </Card>
         <Image
-          src={`/ranks/${getNextRank(rank?.rank)?.rank.toLowerCase()}.png`}
-          aria-label={`${rank?.rank}`}
+          src={`/ranks/${nextRank?.rankName.toLowerCase()}.png`}
+          aria-label={`${nextRank}`}
           width={100}
           height={100}
-          alt={`${getNextRank(rank?.rank)?.rank.toLowerCase()}`}
+          alt={`${nextRank}`}
         />
       </div>
       <div className="grid items-center justify-items-center">
         <Progress
-          value={getProgress(rank?.points, getNextRank(rank?.rank)?.points)}
+          value={
+            nextRank
+              ? getProgress(rank?.points, rankPoints.get(nextRank.fullRank))
+              : 0
+          }
           className="w-[70%]"
         />
       </div>
