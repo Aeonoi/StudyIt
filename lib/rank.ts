@@ -18,13 +18,16 @@ import type { IRank } from "@/models/rank";
 import Rank from "@/models/rank";
 import { CheckRankCollection } from "./mongo-functions";
 import RankLog, { type IRankLog } from "@/models/ranklog";
-import { compareTwoDates } from "./useful-functions";
+import { compareTwoDates, rankPoints } from "./useful-functions";
 
 /**
  * function that determines the number of points to give
- * @param time - The time in minutes
+ *
+ * @param {number} time - The focus time in minutes
+ * @param {boolean} marathon - Flag that determines whether the focus time was from the marathon timer
+ * @returns {number} The total number of points to give based on the total focus time
  */
-function determineFocusPoints(time: number, marathon: boolean) {
+function determineFocusPoints(time: number, marathon: boolean): number {
   if (time < 0) {
     console.error("Time focused is negative");
   }
@@ -56,7 +59,13 @@ function determineFocusPoints(time: number, marathon: boolean) {
   return 5 * time;
 }
 
-function determineLoginPoints(conseuctive_days: number) {
+/**
+ * Determiones the total points to give given the conseuctive days the user has been logged in for
+ *
+ * @param {number} conseuctive_days - The consecutive login days
+ * @returns {number} The number of points from the number of conseuctive days
+ */
+function determineLoginPoints(conseuctive_days: number): number {
   let points = 100;
   // is on a login streak
   if (conseuctive_days > 1) {
@@ -84,8 +93,13 @@ function determineLoginPoints(conseuctive_days: number) {
   return points;
 }
 
-// streaks don't lose that much since it is not reasonable to "focus" everyday
-function determineLoseStreakPoints(streak: number) {
+/**
+ * Determines the total points to lose given the login streak
+ *
+ * @param {number} streak - The login streak
+ * @returns {number} The total number of points the user loses from the broken streak
+ */
+function determineLoseStreakPoints(streak: number): number {
   let points = 50;
   switch (true) {
     case 1 < streak && streak <= 7:
@@ -100,7 +114,11 @@ function determineLoseStreakPoints(streak: number) {
   return points;
 }
 
-async function checkRankUpdate() {
+/**
+ * Updates the current rank and the tier fields. This is mostly to update after gaining or losing points. This is also for insurance to check that the rank is shown properly.
+ *
+ */
+async function checkRankUpdate(): Promise<void> {
   try {
     await connectDB();
 
@@ -205,7 +223,13 @@ async function checkRankUpdate() {
   }
 }
 
-async function updateRank(points: number, desc: string) {
+/**
+ * Updates the rank given the number of points and a short description of the reason for the points gained/lost
+ *
+ * @param {number} points - The number of points that is going to be gained or lost
+ * @param {string} desc - The short description of the reason for updating the rank
+ */
+async function updateRank(points: number, desc: string): Promise<void> {
   const rank: IRank = (await Rank.find())[0];
   await RankLog.create({
     points: points,
@@ -219,7 +243,14 @@ async function updateRank(points: number, desc: string) {
   );
 }
 
-function determineLosePointsNotFocus(remaining: number, type: string) {
+/**
+ * Determines the number of points for not finishing the timer
+ *
+ * @param {number} remaining - The remaining time in minutes
+ * @param {string} type - The timer type
+ * @returns {number} The total number of points to lose
+ */
+function determineLosePointsNotFocus(remaining: number, type: string): number {
   /**
    * lose more points for not completing focuses in case user decides to not
    * take break and finish focusing
@@ -267,9 +298,11 @@ function determineLosePointsNotFocus(remaining: number, type: string) {
 }
 
 /**
- * @returns the Rank object
+ * Gets the rank collection in an object that can be used and read
+ *
+ * @returns {Promise< IRank | undefined >} the rank object that corresponds to the user
  */
-export async function getRank() {
+export async function getRank(): Promise<IRank | undefined> {
   try {
     await connectDB();
     // ensure that the rank collection is created
@@ -285,8 +318,12 @@ export async function getRank() {
 // Logic                //
 //////////////////////////
 
-// when the user logins, they gain some points (more if consecutive)
-export async function login(consecutive_days: number) {
+/**
+ * when the user logins, they gain some points (more if consecutive)
+ *
+ * @param {number} consecutive_days - The total consecutive days the user has been logged in for
+ */
+export async function login(consecutive_days: number): Promise<void> {
   try {
     await connectDB();
 
@@ -306,7 +343,7 @@ export async function login(consecutive_days: number) {
  * @param time - Time in minutes
  * @param marathon - to determine whether focus is via a marathon focus or not
  */
-export async function focusing(time: number, marathon: boolean) {
+export async function focusing(time: number, marathon: boolean): Promise<void> {
   try {
     await connectDB();
 
@@ -320,7 +357,12 @@ export async function focusing(time: number, marathon: boolean) {
   }
 }
 
-export async function finishedBreak(marathon: boolean) {
+/**
+ * Updates the rank collection to reflect the points gained from finishing the break
+ *
+ * @param {boolean} marathon - Flag that determines if the break was from a marathon breeak timer
+ */
+export async function finishedBreak(marathon: boolean): Promise<void> {
   // TODO: Award points for also completing breaks
   try {
     await connectDB();
@@ -336,7 +378,12 @@ export async function finishedBreak(marathon: boolean) {
   }
 }
 
-export async function brokeStreak(streak: number) {
+/**
+ * Updates the rank collection to reflect the points lost from losing a streak
+ *
+ * @param {number} streak - The consecutive days the user has been logged in for
+ */
+export async function brokeStreak(streak: number): Promise<void> {
   try {
     await connectDB();
 
@@ -348,10 +395,15 @@ export async function brokeStreak(streak: number) {
 }
 
 /**
+ * Update rank collection to reflect the points lost from not finishing the timer
+ *
  * @param remaining - The remaining time
  * @param type - The timer type that is currently unfinished
  */
-export async function notFinish(remaining: number, type: string) {
+export async function notFinish(
+  remaining: number,
+  type: string,
+): Promise<void> {
   try {
     await connectDB();
     const points = determineLosePointsNotFocus(remaining, type);
@@ -363,7 +415,10 @@ export async function notFinish(remaining: number, type: string) {
   }
 }
 
-export async function pausedFocus() {
+/**
+ * Updates the rank collection to reflect the points lost from pausing the focus too many times (The default is 3 or more pauses)
+ */
+export async function pausedFocus(): Promise<void> {
   try {
     await connectDB();
     updateRank(-100, "paused focus");
@@ -372,6 +427,11 @@ export async function pausedFocus() {
   }
 }
 
+/**
+ * Gets all the rank logs
+ *
+ * @returns {Promise<IRankLog[] | undefined>} The rank logs sorted by when the rank log was created (latest is first)
+ */
 export async function getRankLogs(): Promise<IRankLog[] | undefined> {
   try {
     await connectDB();
@@ -381,15 +441,20 @@ export async function getRankLogs(): Promise<IRankLog[] | undefined> {
   }
 }
 
+/**
+ * The interface for grouped rank logs
+ */
 export interface GroupedSortedRanks {
   _id: string;
   documents: IRankLog[];
 }
 
 /**
- * @returns An array of documents grouped by the days
+ * @returns {GroupedSortedRanks[]} An array of documents grouped by the days
  */
-export async function getSortedRanks() {
+export async function getSortedRanks(): Promise<
+  GroupedSortedRanks[] | undefined
+> {
   try {
     await connectDB();
 
