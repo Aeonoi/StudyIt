@@ -1,3 +1,16 @@
+# Images
+
+### Light/Dark Mode + Dashboard 
+![images](./public/public_images/dashboard-light.png)
+![images](./public/public_images/dashboard-dark.png)
+### Timer
+![images](./public/public_images/focus.png)
+### Events + To-Dos
+![images](./public/public_images/events.png)
+### Rank System
+![images](./public/public_images/rank.png)
+
+
 ## Goals/Milestones :
 
 ### Dashboard: 
