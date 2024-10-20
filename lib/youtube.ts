@@ -11,7 +11,9 @@ const TYPE: string = "video"; // channel, video
 const YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v=";
 const MAX_RESULTS = 20;
 
-// defines type for returned json
+/**
+ * The object returned by YouTube search API
+ */
 interface YoutubeAPITypes {
   kind: "youtube#searchResult";
   etag: string;
@@ -41,10 +43,14 @@ interface YoutubeAPITypes {
 }
 
 /**
- * DOCS: https://developers.google.com/youtube/v3/docs/search/list#go
- * @return: array of youtube url
+ *
+ * Returns the video urls of the query
+ *
+ * YouTube Search API: https://developers.google.com/youtube/v3/docs/search/list#go
+ *
+ * @returns {string[]} array of youtube url
  */
-export async function fetchVideos(query: string) {
+export async function fetchVideos(query: string): Promise<string[]> {
   QUERY = query;
   const url = `${URL_API}?key=${KEY}&q=${QUERY}&type=${TYPE}&${PART}&maxResults=${MAX_RESULTS}`;
   const data = await fetch(url, {
@@ -69,5 +75,5 @@ export async function fetchVideos(query: string) {
     .catch((error) => {
       console.error(`Error: ${error}`);
     });
-  return data;
+  return data ? data : [];
 }
