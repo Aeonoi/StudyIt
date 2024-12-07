@@ -5,11 +5,7 @@ import Login from "@/models/logins";
 import type { ISuperTask } from "@/models/superTasks";
 import type { ILogin } from "@/models/logins";
 import connectDB from "./connect-mongo";
-import {
-  compareTwoDates,
-  debug_print,
-  getGroupedTotalFocusTime,
-} from "./useful-functions";
+import { compareTwoDates, getGroupedTotalFocusTime } from "./useful-functions";
 import Task from "@/models/tasks";
 import type { ITask } from "@/models/tasks";
 import {
@@ -26,6 +22,12 @@ export interface TaskFocus {
   value: number;
 }
 
+/**
+ * Get the total minutes that have been focused. This includes times from the tasks and no tasks.
+ *
+ * @returns {Promise<number | undefined>} The total minutes the timer has been used for.
+ *
+ */
 export async function getTotalMinutesStudied(): Promise<number | undefined> {
   try {
     await connectDB();

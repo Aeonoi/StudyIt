@@ -46,7 +46,7 @@ const getProgress = (
   return (currentPoints / nextRankPoints) * 100;
 };
 
-const RankLogsHistory = () => {
+const RankLogsHistory: React.FC = () => {
   const [rankLogs, setRankLogs] = useState<GroupedSortedRanks[] | undefined>(
     undefined,
   );
